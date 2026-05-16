@@ -6,17 +6,16 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+
 import java.time.LocalDate;
 
+@Data
 @Schema(description = "Entidade que representa a tabela TB_PROTOCOLO_PREVENTIVO no Oracle DB.")
 @Entity
 @Table(name = "TB_PROTOCOLO_PREVENTIVO")
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
 public class ProtocoloPreventivo {
 
     @Id
@@ -55,4 +54,13 @@ public class ProtocoloPreventivo {
     @JoinColumn(name = "ID_PET", nullable = false)
     @Schema(description = "Pet relacionado ao protocolo.")
     private Pet pet;
+
+    public void transferir(ProtocoloPreventivo protocolo) {
+        this.tipo = protocolo.getTipo();
+        this.nome = protocolo.getNome();
+        this.dataAplicacao = protocolo.getDataAplicacao();
+        this.dataProxima = protocolo.getDataProxima();
+        this.status = protocolo.getStatus();
+        this.pet = protocolo.getPet();
+    }
 }

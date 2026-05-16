@@ -56,4 +56,13 @@ public class Medicamento {
 
     @OneToMany(mappedBy = "medicamento", fetch = FetchType.LAZY)
     private List<AdesaoMedicamento> adesoes;
+
+    public void transferir(Medicamento medicamento) {
+        this.nome = medicamento.getNome();
+        this.dosagem = medicamento.getDosagem();
+        this.frequencia = medicamento.getFrequencia();
+        this.dataInicio = medicamento.getDataInicio();
+        this.dataFim = medicamento.getDataFim();
+        this.evento = medicamento.getEvento();
+    }
 }

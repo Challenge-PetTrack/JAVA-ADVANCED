@@ -87,4 +87,15 @@ public class Pet {
 
     @OneToMany(mappedBy = "pet", fetch = FetchType.LAZY)
     private List<Alerta> alertas;
+
+    public void transferir(Pet pet) {
+        this.nome = pet.getNome();
+        this.especie = pet.getEspecie();
+        this.raca = pet.getRaca();
+        this.sexo = pet.getSexo();
+        this.idade = pet.getIdade();
+        this.peso = pet.getPeso();
+        this.tutor = pet.getTutor();
+        this.clinica = pet.getClinica();
+    }
 }

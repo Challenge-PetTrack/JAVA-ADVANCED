@@ -59,4 +59,13 @@ public class Notificacao {
     @JoinColumn(name = "ID_PET", nullable = false)
     @Schema(description = "Pet relacionado à notificação.")
     private Pet pet;
+
+    public void transferir(Notificacao notificacao) {
+        this.tipo = notificacao.getTipo();
+        this.titulo = notificacao.getTitulo();
+        this.mensagem = notificacao.getMensagem();
+        this.status = notificacao.getStatus();
+        this.tutor = notificacao.getTutor();
+        this.pet = notificacao.getPet();
+    }
 }

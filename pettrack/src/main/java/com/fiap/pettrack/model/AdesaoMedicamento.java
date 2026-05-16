@@ -43,4 +43,11 @@ public class AdesaoMedicamento {
     @JoinColumn(name = "ID_MEDICAMENTO", nullable = false)
     @Schema(description = "Medicamento relacionado à adesão.")
     private Medicamento medicamento;
+
+    public void transferir(AdesaoMedicamento adesao) {
+        this.dataDose = adesao.getDataDose();
+        this.status = adesao.getStatus();
+        this.observacao = adesao.getObservacao();
+        this.medicamento = adesao.getMedicamento();
+    }
 }

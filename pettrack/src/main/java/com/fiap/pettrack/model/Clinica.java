@@ -58,4 +58,11 @@ public class Clinica {
     @OneToMany(mappedBy = "clinica", fetch = FetchType.LAZY)
     private List<EventoClinico> eventos;
 
+    public void transferir(Clinica clinica) {
+        this.nome = clinica.getNome();
+        this.cnpj = clinica.getCnpj();
+        this.email = clinica.getEmail();
+        this.telefone = clinica.getTelefone();
+        this.endereco = clinica.getEndereco();
+    }
 }

@@ -52,4 +52,12 @@ public class Alerta {
     @JoinColumn(name = "ID_PET", nullable = false)
     @Schema(description = "Pet relacionado ao alerta.")
     private Pet pet;
+
+    public void transferir(Alerta alerta) {
+        this.tipoAlerta = alerta.getTipoAlerta();
+        this.descricao = alerta.getDescricao();
+        this.valorRef = alerta.getValorRef();
+        this.resolvido = alerta.getResolvido();
+        this.pet = alerta.getPet();
+    }
 }

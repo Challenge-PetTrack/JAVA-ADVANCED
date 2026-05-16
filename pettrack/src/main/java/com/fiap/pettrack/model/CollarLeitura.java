@@ -48,4 +48,11 @@ public class CollarLeitura {
     @JoinColumn(name = "ID_PET", nullable = false)
     @Schema(description = "Pet relacionado à leitura.")
     private Pet pet;
+
+    public void transferir(CollarLeitura collar) {
+        this.temperatura = collar.getTemperatura();
+        this.atividade = collar.getAtividade();
+        this.topicoMqtt = collar.getTopicoMqtt();
+        this.pet = collar.getPet();
+    }
 }

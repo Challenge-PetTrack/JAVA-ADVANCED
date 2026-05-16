@@ -46,4 +46,11 @@ public class BCSHistorico {
     @JoinColumn(name = "ID_PET", nullable = false)
     @Schema(description = "Pet relacionado ao BCS.")
     private Pet pet;
+
+    public void transferir(BCSHistorico bcs) {
+        this.bcs = bcs.getBcs();
+        this.fotoUrl = bcs.getFotoUrl();
+        this.observacao = bcs.getObservacao();
+        this.pet = bcs.getPet();
+    }
 }

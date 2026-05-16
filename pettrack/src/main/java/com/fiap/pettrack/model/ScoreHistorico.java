@@ -44,4 +44,10 @@ public class ScoreHistorico {
     @JoinColumn(name = "ID_PET", nullable = false)
     @Schema(description = "Pet relacionado ao score.")
     private Pet pet;
+
+    public void transferir(ScoreHistorico score) {
+        this.score = score.getScore();
+        this.observacao = score.getObservacao();
+        this.pet = score.getPet();
+    }
 }

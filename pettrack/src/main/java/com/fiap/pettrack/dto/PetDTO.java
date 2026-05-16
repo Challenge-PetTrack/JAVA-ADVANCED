@@ -1,5 +1,7 @@
 package com.fiap.pettrack.dto;
 
+import com.fiap.pettrack.model.Clinica;
+import com.fiap.pettrack.model.Tutor;
 import com.fiap.pettrack.model.enums.SexoPetEnum;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
@@ -34,11 +36,9 @@ public class PetDTO {
     @Schema(description = "Peso do pet em kg.", example = "12.5")
     private Double peso;
 
-    @NotNull(message = "O ID do tutor é obrigatório")
-    @Schema(description = "ID do tutor.", example = "1")
-    private Long idTutor;
+    @Schema(description = "Objeto de tutor.", example = "1")
+    private Tutor tutor;
 
-    @NotNull(message = "O ID da clínica é obrigatório")
-    @Schema(description = "ID da clínica.", example = "1")
-    private Long idClinica;
+    @Schema(description = "Objeto de clínica.", example = "1")
+    private Clinica clinica;
 }

@@ -56,4 +56,13 @@ public class EventoClinico {
 
     @OneToMany(mappedBy = "evento", fetch = FetchType.LAZY)
     private List<Medicamento> medicamentos;
+
+    public void transferir(EventoClinico evento) {
+        this.tipo = evento.getTipo();
+        this.dataEvento = evento.getDataEvento();
+        this.diagnostico = evento.getDiagnostico();
+        this.observacao = evento.getObservacao();
+        this.pet = evento.getPet();
+        this.clinica = evento.getClinica();
+    }
 }

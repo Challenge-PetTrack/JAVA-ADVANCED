@@ -56,4 +56,10 @@ public class Tutor {
     @OneToMany(mappedBy = "tutor", fetch = FetchType.LAZY)
     private List<Notificacao> notificacoes;
 
+    public void transferir(Tutor tutor) {
+        this.nome = tutor.getNome();
+        this.email = tutor.getEmail();
+        this.telefone = tutor.getTelefone();
+        this.endereco = tutor.getEndereco();
+    }
 }
