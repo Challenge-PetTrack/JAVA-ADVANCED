@@ -9,9 +9,6 @@ import org.mapstruct.ReportingPolicy;
 @Mapper(componentModel = "spring", unmappedSourcePolicy = ReportingPolicy.IGNORE)
 public interface ICollarLeituraMapper {
 
-    @Mapping(target = "idPet", source = "pet.id")
     CollarLeituraDTO toDTO(CollarLeitura collar);
-
-    @Mapping(target = "pet.id", source = "idPet")
     CollarLeitura toEntity(CollarLeituraDTO collarDTO);
 }

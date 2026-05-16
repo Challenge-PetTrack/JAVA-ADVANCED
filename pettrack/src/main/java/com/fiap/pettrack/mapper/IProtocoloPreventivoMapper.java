@@ -9,9 +9,6 @@ import org.mapstruct.ReportingPolicy;
 @Mapper(componentModel = "spring", unmappedSourcePolicy = ReportingPolicy.IGNORE)
 public interface IProtocoloPreventivoMapper {
 
-    @Mapping(target = "idPet", source = "pet.id")
     ProtocoloPreventivoDTO toDTO(ProtocoloPreventivo protocolo);
-
-    @Mapping(target = "pet.id", source = "idPet")
     ProtocoloPreventivo toEntity(ProtocoloPreventivoDTO protocoloDTO);
 }

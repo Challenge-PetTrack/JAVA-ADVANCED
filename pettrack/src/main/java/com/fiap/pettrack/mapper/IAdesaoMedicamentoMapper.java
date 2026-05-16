@@ -9,9 +9,6 @@ import org.mapstruct.ReportingPolicy;
 @Mapper(componentModel = "spring", unmappedSourcePolicy = ReportingPolicy.IGNORE)
 public interface IAdesaoMedicamentoMapper {
 
-    @Mapping(target = "idMedicamento", source = "medicamento.id")
     AdesaoMedicamentoDTO toDTO(AdesaoMedicamento adesao);
-
-    @Mapping(target = "medicamento.id", source = "idMedicamento")
     AdesaoMedicamento toEntity(AdesaoMedicamentoDTO adesaoDTO);
 }

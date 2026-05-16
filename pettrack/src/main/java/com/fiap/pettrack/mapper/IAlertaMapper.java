@@ -9,9 +9,6 @@ import org.mapstruct.ReportingPolicy;
 @Mapper(componentModel = "spring", unmappedSourcePolicy = ReportingPolicy.IGNORE)
 public interface IAlertaMapper {
 
-    @Mapping(target = "idPet", source = "pet.id")
     AlertaDTO toDTO(Alerta alerta);
-
-    @Mapping(target = "pet.id", source = "idPet")
     Alerta toEntity(AlertaDTO alertaDTO);
 }

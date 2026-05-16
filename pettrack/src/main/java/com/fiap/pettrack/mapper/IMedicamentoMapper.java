@@ -9,9 +9,7 @@ import org.mapstruct.ReportingPolicy;
 @Mapper(componentModel = "spring", unmappedSourcePolicy = ReportingPolicy.IGNORE)
 public interface IMedicamentoMapper {
 
-    @Mapping(target = "idEvento", source = "evento.id")
-    MedicamentoDTO toDTO(Medicamento medicamento);
 
-    @Mapping(target = "evento.id", source = "idEvento")
+    MedicamentoDTO toDTO(Medicamento medicamento);
     Medicamento toEntity(MedicamentoDTO medicamentoDTO);
 }

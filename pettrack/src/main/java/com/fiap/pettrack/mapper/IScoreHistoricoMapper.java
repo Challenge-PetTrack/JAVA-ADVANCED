@@ -9,9 +9,6 @@ import org.mapstruct.ReportingPolicy;
 @Mapper(componentModel = "spring", unmappedSourcePolicy = ReportingPolicy.IGNORE)
 public interface IScoreHistoricoMapper {
 
-    @Mapping(target = "idPet", source = "pet.id")
     ScoreHistoricoDTO toDTO(ScoreHistorico score);
-
-    @Mapping(target = "pet.id", source = "idPet")
     ScoreHistorico toEntity(ScoreHistoricoDTO scoreDTO);
 }

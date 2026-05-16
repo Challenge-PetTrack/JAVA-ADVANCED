@@ -9,9 +9,7 @@ import org.mapstruct.ReportingPolicy;
 @Mapper(componentModel = "spring", unmappedSourcePolicy = ReportingPolicy.IGNORE)
 public interface IBCSHistoricoMapper {
 
-    @Mapping(target = "idPet", source = "pet.id")
-    BCSHistoricoDTO toDTO(BCSHistorico bcs);
 
-    @Mapping(target = "pet.id", source = "idPet")
+    BCSHistoricoDTO toDTO(BCSHistorico bcs);
     BCSHistorico toEntity(BCSHistoricoDTO bcsDTO);
 }

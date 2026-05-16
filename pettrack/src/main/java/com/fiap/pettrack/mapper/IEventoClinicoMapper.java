@@ -9,11 +9,6 @@ import org.mapstruct.ReportingPolicy;
 @Mapper(componentModel = "spring", unmappedSourcePolicy = ReportingPolicy.IGNORE)
 public interface IEventoClinicoMapper {
 
-    @Mapping(target = "idPet", source = "pet.id")
-    @Mapping(target = "idClinica", source = "clinica.id")
     EventoClinicoDTO toDTO(EventoClinico evento);
-
-    @Mapping(target = "pet.id", source = "idPet")
-    @Mapping(target = "clinica.id", source = "idClinica")
     EventoClinico toEntity(EventoClinicoDTO eventoDTO);
 }

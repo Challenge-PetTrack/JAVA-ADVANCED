@@ -9,11 +9,6 @@ import org.mapstruct.ReportingPolicy;
 @Mapper(componentModel = "spring", unmappedSourcePolicy = ReportingPolicy.IGNORE)
 public interface INotificacaoMapper {
 
-    @Mapping(target = "idTutor", source = "tutor.id")
-    @Mapping(target = "idPet", source = "pet.id")
     NotificacaoDTO toDTO(Notificacao notificacao);
-
-    @Mapping(target = "tutor.id", source = "idTutor")
-    @Mapping(target = "pet.id", source = "idPet")
     Notificacao toEntity(NotificacaoDTO notificacaoDTO);
 }
