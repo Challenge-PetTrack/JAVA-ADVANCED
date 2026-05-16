@@ -1,369 +1,189 @@
-# PetTrack — Sistema Operacional da Saúde Contínua do Pet
+# 🐾 PetTrack — Sistema Operacional da Saúde Contínua do Pet
 
-> Projeto acadêmico desenvolvido para o **Challenge 2026 — FIAP + Clyvo Vet**  
-> Matéria: **Java Advanced**
-
----
-
-# 📌 Sobre o Projeto
-
-O **PetTrack** é uma plataforma de saúde contínua para pets, conectando:
-
-- Tutores
-- Clínicas veterinárias
-- Dispositivos IoT
-- Inteligência Artificial
-- Aplicativo mobile
-
-O sistema transforma o acompanhamento veterinário de um modelo **reativo** para um modelo **preventivo, inteligente e contínuo**.
-
-O **Spring Boot** é o núcleo central da arquitetura, responsável por:
-
-- Expor APIs REST
-- Persistir dados no Oracle
-- Integrar serviços externos
-- Receber dados de IoT
-- Centralizar regras de negócio
+> Challenge FIAP 2026 · Turma 2TDS Fevereiro · Parceiro: **Clyvo Vet**
 
 ---
 
-# 🏗 Arquitetura do Sistema
+## 📋 Descrição
 
-```txt
-React Native App
-        ↓
-Spring Boot API
-        ↓
-Oracle Database
+O **PetTrack** é uma plataforma de saúde contínua que conecta tutores, pets e clínicas veterinárias. O sistema centraliza o histórico clínico dos animais, monitora a adesão a medicamentos, analisa o Body Condition Score (BCS) por inteligência artificial e coleta dados em tempo real via collar IoT.
 
-Node-RED + ESP32 + MQTT
-        ↓
-Spring Boot API
-        ↓
-TB_ALERTA / TB_COLLAR_LEITURA
+---
 
-Spring Boot API
+## 👥 Equipe
+
+| Nome | RM |
+|---|---|
+| Gabriel Sbrana Campos | RM 565849 |
+| Moisés Waidemann | RM 563719 |
+| Thiago Rodrigues da Mota | RM 563765 |
+| Richard Freitas | RM 566127 |
+
+---
+
+## 🏗️ Arquitetura
+
+```
+React Native (Mobile)
         ↓
-Python FastAPI + Claude Vision
-        ↓
-BCS Analysis
-        ↓
-TB_BCS_HISTORICO
+Java Spring Boot (API Central) ←→ Oracle DB
+        ↑               ↑
+Python FastAPI        Node-RED
+(BCS via GPT-4o)   (ESP32 via MQTT)
 ```
 
----
+### Stack Completa
 
-# 🚀 Stack Tecnológica
-
-## Backend
-
-- Java 21
-- Spring Boot 3
-- Spring Data JPA
-- Hibernate
-- Bean Validation
-- Swagger/OpenAPI
-- WebClient
-- Spring Cache
-- Maven
-
-## Banco de Dados
-
-- Oracle Database
-
-## Mobile
-
-- React Native
-- Expo
-
-## Cloud
-
-- Azure VM
-- Docker Compose
-
-## IoT
-
-- ESP32
-- MQTT TLS
-- HiveMQ
-- Node-RED
-
-## Inteligência Artificial
-
-- Python FastAPI
-- Claude Vision API
+| Camada | Tecnologia |
+|---|---|
+| Mobile | React Native + Expo |
+| Backend | Java 17 + Spring Boot 3 |
+| Banco de Dados | Oracle DB (oracle.fiap.com.br:1521:ORCL) |
+| IA / BCS | Python FastAPI + GPT-4o Vision |
+| IoT | ESP32 + MQTT TLS HiveMQ + Node-RED |
+| Cloud | Azure VM + Docker Compose |
 
 ---
 
-# 📂 Estrutura de Pacotes
+## 📦 Estrutura de Pacotes
 
-```txt
+```
 com.fiap.pettrack
-│
-├── config/
-├── controller/
-├── dto/
-├── entity/
-├── exception/
-├── repository/
-├── service/
-└── integration/
+├── config/          → Swagger, Cache
+├── control/         → REST Controllers (12)
+├── dto/             → DTOs com Bean Validation (12)
+├── mapper/          → MapStruct Mappers (12)
+├── model/           → Entidades JPA (12) + Enums (7)
+│   └── enums/
+├── repository/      → JPA Repositories (12)
+├── service/         → CachingServices (12) + PaginacaoServices (12)
+└── validations/     → GlobalExceptionHandler
 ```
 
 ---
 
-# 📦 Dependências Principais
+## 🗄️ Banco de Dados
 
-```xml
-<dependencies>
+O projeto utiliza Oracle DB com tabelas já criadas via DDL. As entidades JPA apenas mapeiam as tabelas existentes — **não recria o banco**.
 
-    <!-- REST API -->
-    <dependency>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-web</artifactId>
-    </dependency>
+### Tabelas Mapeadas
 
-    <!-- JPA -->
-    <dependency>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-data-jpa</artifactId>
-    </dependency>
-
-    <!-- Validation -->
-    <dependency>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-validation</artifactId>
-    </dependency>
-
-    <!-- Oracle -->
-    <dependency>
-        <groupId>com.oracle.database.jdbc</groupId>
-        <artifactId>ojdbc11</artifactId>
-        <scope>runtime</scope>
-    </dependency>
-
-    <!-- Swagger -->
-    <dependency>
-        <groupId>org.springdoc</groupId>
-        <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
-        <version>2.5.0</version>
-    </dependency>
-
-    <!-- Cache -->
-    <dependency>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-cache</artifactId>
-    </dependency>
-
-    <!-- WebClient -->
-    <dependency>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-webflux</artifactId>
-    </dependency>
-
-    <!-- Lombok -->
-    <dependency>
-        <groupId>org.projectlombok</groupId>
-        <artifactId>lombok</artifactId>
-        <optional>true</optional>
-    </dependency>
-
-</dependencies>
+```
+TB_TUTOR               TB_CLINICA
+TB_PET                 TB_EVENTO_CLINICO
+TB_PROTOCOLO_PREVENTIVO TB_MEDICAMENTO
+TB_ADESAO_MEDICAMENTO  TB_NOTIFICACAO
+TB_SCORE_HISTORICO     TB_BCS_HISTORICO
+TB_COLLAR_LEITURA      TB_ALERTA
 ```
 
 ---
 
-# 🗄 Banco de Dados
+## 🔄 Fluxo de Dados
 
-## Tabelas Principais
+```
+Mobile → POST /api → Spring Boot → Oracle (CRUD principal)
 
-```txt
-TB_TUTOR
-TB_CLINICA
-TB_PET
-TB_EVENTO_CLINICO
-TB_PROTOCOLO_PREVENTIVO
-TB_MEDICAMENTO
-TB_ADESAO_MEDICAMENTO
-TB_NOTIFICACAO
-TB_SCORE_HISTORICO
-TB_BCS_HISTORICO
-TB_COLLAR_LEITURA
-TB_ALERTA
-TB_LOG_ERRO
+Node-RED → HTTP POST → Spring Boot → TB_COLLAR_LEITURA
+Node-RED → HTTP POST → Spring Boot → TB_ALERTA
+
+Mobile → foto → Python FastAPI → GPT-4o Vision → BCS
+                                               ↓
+                              Spring Boot → TB_BCS_HISTORICO
 ```
 
 ---
 
-# 🔗 Principais Endpoints
+## 🚀 Como Rodar
 
-## Tutores
+### Pré-requisitos
 
-```http
-GET    /api/v1/tutores
-GET    /api/v1/tutores/{id}
-POST   /api/v1/tutores
-PUT    /api/v1/tutores/{id}
-DELETE /api/v1/tutores/{id}
-```
+- Java 17+
+- Maven 3.8+
+- IntelliJ IDEA (recomendado)
+- Acesso ao Oracle FIAP (`oracle.fiap.com.br:1521:ORCL`)
 
-## Pets
+### Passos
 
-```http
-GET    /api/v1/pets
-GET    /api/v1/pets/{id}
-GET    /api/v1/pets/tutor/{id_tutor}
-POST   /api/v1/pets
-PUT    /api/v1/pets/{id}
-DELETE /api/v1/pets/{id}
-```
-
-## Alertas
-
-```http
-POST   /api/v1/alertas
-GET    /api/v1/alertas/pet/{id_pet}
-GET    /api/v1/alertas/pendentes
-PUT    /api/v1/alertas/{id}/resolver
-```
-
-## Collar IoT
-
-```http
-POST   /api/v1/collar/leitura
-GET    /api/v1/collar/{id_pet}/ultimas
-```
-
-## BCS + IA
-
-```http
-POST   /api/v1/bcs/analyze
-GET    /api/v1/bcs/pet/{id_pet}/historico
-```
-
----
-
-# 🔥 Funcionalidades
-
-- CRUD completo de tutores, pets e clínicas
-- Histórico clínico
-- Protocolos preventivos
-- Controle medicamentoso
-- Health Score
-- Monitoramento IoT
-- Alertas inteligentes
-- Integração com IA para análise corporal (BCS)
-- API REST documentada
-- Cache de consultas frequentes
-- Tratamento global de exceções
-
----
-
-# 🧠 Integrações Externas
-
-## Python FastAPI — BCS
-
-Fluxo:
-
-```txt
-Mobile → Spring Boot → Python FastAPI → Claude Vision → Oracle
-```
-
-O Spring Boot envia imagens para análise corporal via IA e persiste o resultado no banco.
-
----
-
-## Node-RED + ESP32
-
-Fluxo:
-
-```txt
-ESP32 → MQTT → Node-RED → Spring Boot → Oracle
-```
-
-Responsável pelo envio de:
-
-- Temperatura
-- Atividade
-- Alertas críticos
-
----
-
-# ⚙️ Requisitos Técnicos da Matéria
-
-- JPA/Hibernate
-- Relacionamentos entre entidades
-- DTOs Request/Response
-- Bean Validation
-- Paginação
-- Ordenação
-- Cache
-- Swagger/OpenAPI
-- ControllerAdvice
-- Repository Pattern
-- Service Layer
-- GitHub público
-- Postman Collection
-
----
-
-# ▶️ Como Executar
-
-## 1. Clonar o projeto
-
+**1. Clone o repositório**
 ```bash
-git clone https://github.com/seu-usuario/pettrack.git
+git clone https://github.com/Challenge-PetTrack/JAVA-ADVANCED.git
+cd JAVA-ADVANCED
 ```
 
----
-
-## 2. Entrar na pasta
-
-```bash
-cd pettrack
-```
-
----
-
-## 3. Configurar o application.properties
-
+**2. Configure o `application.properties`**
 ```properties
-spring.datasource.url=jdbc:oracle:thin:@oracle.fiap.com.br:1521:ORCL
-spring.datasource.username=RM
-spring.datasource.password=SENHA
+spring.datasource.username=SEU_RM
+spring.datasource.password=SUA_SENHA
+```
 
-spring.jpa.hibernate.ddl-auto=update
-spring.jpa.show-sql=true
+**3. Rode pelo IntelliJ**
+
+Abra o projeto no IntelliJ IDEA e execute a classe `PetTrackApplication.java`.
+
+**4. Acesse o Swagger**
+```
+http://localhost:8080/swagger
 ```
 
 ---
 
-## 4. Rodar o projeto
+## 📡 Endpoints Principais
 
-```bash
-mvn spring-boot:run
+| Recurso | Base URL |
+|---|---|
+| Tutores | `/tutor` |
+| Clínicas | `/clinica` |
+| Pets | `/pet` |
+| Eventos Clínicos | `/evento` |
+| Protocolos Preventivos | `/protocolo` |
+| Medicamentos | `/medicamento` |
+| Adesão Medicamentosa | `/adesao` |
+| Notificações | `/notificacao` |
+| Health Score | `/score` |
+| BCS Histórico | `/bcs` |
+| Collar Leitura | `/collar` |
+| Alertas | `/alerta` |
+
+Cada recurso expõe:
+
+```
+GET    /todos          → lista todos
+GET    /paginar        → lista paginada
+GET    /{id}           → busca por ID
+POST   /novo           → cria novo registro
+PUT    /atualizar/{id} → atualiza registro
+DELETE /remover/{id}   → remove registro
 ```
 
 ---
 
-# 📘 Swagger
+## ✅ Requisitos Técnicos Atendidos
 
-Após iniciar a aplicação:
-
-```txt
-http://localhost:8080/swagger-ui/index.html
-```
-
----
-
-# 👥 Equipe
-
-## FIAP — Challenge 2026
-
-Projeto desenvolvido em parceria com a **Clyvo Vet**.
+- [x] Entidades JPA mapeadas com relacionamentos (`@OneToMany`, `@ManyToOne`)
+- [x] Bean Validation nos DTOs (`@NotBlank`, `@Email`, `@Min`, `@Max`, `@DecimalMin`, `@DecimalMax`)
+- [x] DTOs separados das entidades com MapStruct
+- [x] Paginação nos endpoints de listagem (`PageRequest`)
+- [x] Cache nas consultas frequentes (`@Cacheable`, `@CacheEvict`)
+- [x] Tratamento global de exceções (`@RestControllerAdvice`)
+- [x] Documentação Swagger/OpenAPI (`springdoc-openapi`)
+- [x] Padrões REST com status HTTP corretos (200, 201, 204, 400, 404)
+- [x] JPQL e Spring JPA Query Methods
+- [x] Design Patterns: Repository, Service, DTO, Mapper
 
 ---
 
-# 📄 Licença
+## 🔗 Links
 
-Projeto acadêmico sem fins comerciais.
+- **GitHub:** https://github.com/Challenge-PetTrack/JAVA-ADVANCED
+- **Swagger:** http://localhost:8080/swagger
+
+---
+
+## 📅 Cronograma
+
+| Sprint | Período | Foco |
+|---|---|---|
+| Sprint 1 | 23/04 – 28/04 | Banco, estrutura e entidades JPA |
+| Sprint 2 | 28/04 – 04/05 | Services, Controllers e integrações |
+| Sprint 3 | 04/05 – 08/05 | Qualidade, documentação e entrega |
