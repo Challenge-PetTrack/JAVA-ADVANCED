@@ -1,7 +1,6 @@
 package com.fiap.pettrack.service;
 
-import com.fiap.pettrack.dto.ScoreHistoricoDTO;
-import com.fiap.pettrack.mapper.IScoreHistoricoMapper;
+import com.fiap.pettrack.model.ScoreHistorico;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -14,12 +13,8 @@ public class ScoreHistoricoPaginacaoService {
     @Autowired
     private ScoreHistoricoCachingService scoreHistoricoCachingService;
 
-    @Autowired
-    private IScoreHistoricoMapper iScoreHistoricoMapper;
-
     @Transactional(readOnly = true)
-    public Page<ScoreHistoricoDTO> paginar(PageRequest pageRequest) {
-        return scoreHistoricoCachingService.findAll(pageRequest)
-                .map(iScoreHistoricoMapper::toDTO);
+    public Page<ScoreHistorico> paginar(PageRequest pageRequest) {
+        return scoreHistoricoCachingService.findAll(pageRequest);
     }
 }

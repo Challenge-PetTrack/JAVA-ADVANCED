@@ -1,7 +1,6 @@
 package com.fiap.pettrack.service;
 
-import com.fiap.pettrack.dto.BCSHistoricoDTO;
-import com.fiap.pettrack.mapper.IBCSHistoricoMapper;
+import com.fiap.pettrack.model.BCSHistorico;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -14,12 +13,9 @@ public class BCSHistoricoPaginacaoService {
     @Autowired
     private BCSHistoricoCachingService bcsHistoricoCachingService;
 
-    @Autowired
-    private IBCSHistoricoMapper iBCSHistoricoMapper;
 
     @Transactional(readOnly = true)
-    public Page<BCSHistoricoDTO> paginar(PageRequest pageRequest) {
-        return bcsHistoricoCachingService.findAll(pageRequest)
-                .map(iBCSHistoricoMapper::toDTO);
+    public Page<BCSHistorico> paginar(PageRequest pageRequest) {
+        return bcsHistoricoCachingService.findAll(pageRequest);
     }
 }

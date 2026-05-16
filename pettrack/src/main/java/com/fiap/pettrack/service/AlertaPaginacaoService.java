@@ -1,7 +1,7 @@
 package com.fiap.pettrack.service;
 
-import com.fiap.pettrack.dto.AlertaDTO;
-import com.fiap.pettrack.mapper.IAlertaMapper;
+
+import com.fiap.pettrack.model.Alerta;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -14,12 +14,9 @@ public class AlertaPaginacaoService {
     @Autowired
     private AlertaCachingService alertaCachingService;
 
-    @Autowired
-    private IAlertaMapper iAlertaMapper;
 
     @Transactional(readOnly = true)
-    public Page<AlertaDTO> paginar(PageRequest pageRequest) {
-        return alertaCachingService.findAll(pageRequest)
-                .map(iAlertaMapper::toDTO);
+    public Page<Alerta> paginar(PageRequest pageRequest) {
+        return alertaCachingService.findAll(pageRequest);
     }
 }

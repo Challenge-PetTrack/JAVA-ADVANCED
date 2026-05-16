@@ -1,7 +1,6 @@
 package com.fiap.pettrack.service;
 
-import com.fiap.pettrack.dto.ClinicaDTO;
-import com.fiap.pettrack.mapper.IClinicaMapper;
+import com.fiap.pettrack.model.Clinica;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -14,12 +13,9 @@ public class ClinicaPaginacaoService {
     @Autowired
     private ClinicaCachingService clinicaCachingService;
 
-    @Autowired
-    private IClinicaMapper iClinicaMapper;
 
     @Transactional(readOnly = true)
-    public Page<ClinicaDTO> paginar(PageRequest pageRequest) {
-        return clinicaCachingService.findAll(pageRequest)
-                .map(iClinicaMapper::toDTO);
+    public Page<Clinica> paginar(PageRequest pageRequest) {
+        return clinicaCachingService.findAll(pageRequest);
     }
 }

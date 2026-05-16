@@ -1,7 +1,6 @@
 package com.fiap.pettrack.service;
 
-import com.fiap.pettrack.dto.NotificacaoDTO;
-import com.fiap.pettrack.mapper.INotificacaoMapper;
+import com.fiap.pettrack.model.Notificacao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -14,12 +13,10 @@ public class NotificacaoPaginacaoService {
     @Autowired
     private NotificacaoCachingService notificacaoCachingService;
 
-    @Autowired
-    private INotificacaoMapper iNotificacaoMapper;
+
 
     @Transactional(readOnly = true)
-    public Page<NotificacaoDTO> paginar(PageRequest pageRequest) {
-        return notificacaoCachingService.findAll(pageRequest)
-                .map(iNotificacaoMapper::toDTO);
+    public Page<Notificacao> paginar(PageRequest pageRequest) {
+        return notificacaoCachingService.findAll(pageRequest);
     }
 }

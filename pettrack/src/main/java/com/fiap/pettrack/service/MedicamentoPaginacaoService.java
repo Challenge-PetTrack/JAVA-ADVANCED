@@ -1,7 +1,7 @@
 package com.fiap.pettrack.service;
 
-import com.fiap.pettrack.dto.MedicamentoDTO;
-import com.fiap.pettrack.mapper.IMedicamentoMapper;
+
+import com.fiap.pettrack.model.Medicamento;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -14,12 +14,9 @@ public class MedicamentoPaginacaoService {
     @Autowired
     private MedicamentoCachingService medicamentoCachingService;
 
-    @Autowired
-    private IMedicamentoMapper iMedicamentoMapper;
 
     @Transactional(readOnly = true)
-    public Page<MedicamentoDTO> paginar(PageRequest pageRequest) {
-        return medicamentoCachingService.findAll(pageRequest)
-                .map(iMedicamentoMapper::toDTO);
+    public Page<Medicamento> paginar(PageRequest pageRequest) {
+        return medicamentoCachingService.findAll(pageRequest);
     }
 }

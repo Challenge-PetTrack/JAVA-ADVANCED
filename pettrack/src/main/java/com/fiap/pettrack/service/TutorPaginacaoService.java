@@ -1,7 +1,6 @@
 package com.fiap.pettrack.service;
 
-import com.fiap.pettrack.dto.TutorDTO;
-import com.fiap.pettrack.mapper.ITutorMapper;
+import com.fiap.pettrack.model.Tutor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -14,11 +13,9 @@ public class TutorPaginacaoService {
 
     @Autowired
     private TutorCachingService tutorCachingService;
-    @Autowired
-    private ITutorMapper iTutorMapper;
 
     @Transactional(readOnly = true)
-    public Page<TutorDTO> paginar(PageRequest pageRequest){
-        return tutorCachingService.findAll(pageRequest).map(iTutorMapper::toDTO);
+    public Page<Tutor> paginar(PageRequest pageRequest){
+        return tutorCachingService.findAll(pageRequest);
     }
 }
