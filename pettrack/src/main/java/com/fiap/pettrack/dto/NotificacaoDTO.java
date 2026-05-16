@@ -1,5 +1,7 @@
 package com.fiap.pettrack.dto;
 
+import com.fiap.pettrack.model.Pet;
+import com.fiap.pettrack.model.Tutor;
 import com.fiap.pettrack.model.enums.SimNaoEnum;
 import com.fiap.pettrack.model.enums.TipoNotificacaoEnum;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -30,11 +32,9 @@ public class NotificacaoDTO {
     @Schema(description = "Status de leitura.", example = "N")
     private SimNaoEnum status;
 
-    @NotNull(message = "O ID do tutor é obrigatório")
-    @Schema(description = "ID do tutor.", example = "1")
-    private Long idTutor;
+    @Schema(description = "Objeto de Tutor.", example = "1")
+    private Tutor tutor;
 
-    @NotNull(message = "O ID do pet é obrigatório")
-    @Schema(description = "ID do pet.", example = "1")
-    private Long idPet;
+    @Schema(description = "Objeto de pet.", example = "1")
+    private Pet pet;
 }

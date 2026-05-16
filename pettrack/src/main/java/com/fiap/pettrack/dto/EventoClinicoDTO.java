@@ -1,5 +1,7 @@
 package com.fiap.pettrack.dto;
 
+import com.fiap.pettrack.model.Clinica;
+import com.fiap.pettrack.model.Pet;
 import com.fiap.pettrack.model.enums.TipoEventoClinicoEnum;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
@@ -28,11 +30,9 @@ public class EventoClinicoDTO {
     @Schema(description = "Observações do evento.", example = "Coceira intensa")
     private String observacao;
 
-    @NotNull(message = "O ID do pet é obrigatório")
-    @Schema(description = "ID do pet.", example = "1")
-    private Long idPet;
+    @Schema(description = "Objeto de pet.", example = "1")
+    private Pet pet;
 
-    @NotNull(message = "O ID da clínica é obrigatório")
-    @Schema(description = "ID da clínica.", example = "1")
-    private Long idClinica;
+    @Schema(description = "Objeto de clínica.", example = "1")
+    private Clinica clinica;
 }

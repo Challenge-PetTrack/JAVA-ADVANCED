@@ -1,5 +1,6 @@
 package com.fiap.pettrack.dto;
 
+import com.fiap.pettrack.model.EventoClinico;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -33,7 +34,6 @@ public class MedicamentoDTO {
     @Schema(description = "Data de fim.", example = "2025-02-10")
     private LocalDate dataFim;
 
-    @NotNull(message = "O ID do evento é obrigatório")
-    @Schema(description = "ID do evento clínico.", example = "1")
-    private Long idEvento;
+    @Schema(description = "Obejto de evento clínico.", example = "1")
+    private EventoClinico eventoClinico;
 }

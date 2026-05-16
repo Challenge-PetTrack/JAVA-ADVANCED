@@ -1,5 +1,6 @@
 package com.fiap.pettrack.dto;
 
+import com.fiap.pettrack.model.Medicamento;
 import com.fiap.pettrack.model.enums.SimNaoEnum;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
@@ -25,7 +26,6 @@ public class AdesaoMedicamentoDTO {
     @Schema(description = "Observações.", example = "Tutor esqueceu")
     private String observacao;
 
-    @NotNull(message = "O ID do medicamento é obrigatório")
-    @Schema(description = "ID do medicamento.", example = "1")
-    private Long idMedicamento;
+    @Schema(description = "Objeto de medicamento.", example = "1")
+    private Medicamento medicamento;
 }

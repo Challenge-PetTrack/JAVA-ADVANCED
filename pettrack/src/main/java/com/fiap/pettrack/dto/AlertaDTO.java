@@ -1,5 +1,6 @@
 package com.fiap.pettrack.dto;
 
+import com.fiap.pettrack.model.Pet;
 import com.fiap.pettrack.model.enums.SimNaoEnum;
 import com.fiap.pettrack.model.enums.TipoAlertaEnum;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -28,7 +29,6 @@ public class AlertaDTO {
     @Schema(description = "Status de resolução.", example = "N")
     private SimNaoEnum resolvido;
 
-    @NotNull(message = "O ID do pet é obrigatório")
-    @Schema(description = "ID do pet.", example = "1")
-    private Long idPet;
+    @Schema(description = "Objeto de pet.", example = "1")
+    private Pet pet;
 }

@@ -1,5 +1,6 @@
 package com.fiap.pettrack.dto;
 
+import com.fiap.pettrack.model.Pet;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -25,7 +26,6 @@ public class BCSHistoricoDTO {
     @Schema(description = "Observações.", example = "BCS ideal")
     private String observacao;
 
-    @NotNull(message = "O ID do pet é obrigatório")
-    @Schema(description = "ID do pet.", example = "1")
-    private Long idPet;
+    @Schema(description = "Objeto de pet.", example = "1")
+    private Pet pet;
 }

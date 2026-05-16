@@ -1,5 +1,6 @@
 package com.fiap.pettrack.dto;
 
+import com.fiap.pettrack.model.Pet;
 import com.fiap.pettrack.model.enums.TipoProtocoloPreventivoEnum;
 import com.fiap.pettrack.model.enums.StatusProtocoloPreventivoEnum;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -34,7 +35,6 @@ public class ProtocoloPreventivoDTO {
     @Schema(description = "Status do protocolo.", example = "REALIZADO")
     private StatusProtocoloPreventivoEnum status;
 
-    @NotNull(message = "O ID do pet é obrigatório")
-    @Schema(description = "ID do pet.", example = "1")
-    private Long idPet;
+    @Schema(description = "Objeto de pet.", example = "1")
+    private Pet pet;
 }
