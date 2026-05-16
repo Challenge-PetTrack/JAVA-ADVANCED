@@ -3,7 +3,6 @@ package com.fiap.pettrack.mapper;
 import com.fiap.pettrack.dto.PetDTO;
 import com.fiap.pettrack.model.Pet;
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
 
 @Mapper(componentModel = "spring", unmappedSourcePolicy = ReportingPolicy.IGNORE)
