@@ -1,5 +1,6 @@
 package com.fiap.pettrack.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
@@ -54,6 +55,7 @@ public class Medicamento {
     @Schema(description = "Evento clínico que originou o medicamento.")
     private EventoClinico evento;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "medicamento", fetch = FetchType.LAZY)
     private List<AdesaoMedicamento> adesoes;
 

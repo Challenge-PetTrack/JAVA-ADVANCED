@@ -1,5 +1,6 @@
 package com.fiap.pettrack.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fiap.pettrack.model.enums.TipoEventoClinicoEnum;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
@@ -54,6 +55,7 @@ public class EventoClinico {
     @Schema(description = "Clínica onde ocorreu o evento.")
     private Clinica clinica;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "evento", fetch = FetchType.LAZY)
     private List<Medicamento> medicamentos;
 

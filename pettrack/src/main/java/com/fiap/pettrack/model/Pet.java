@@ -1,6 +1,7 @@
 package com.fiap.pettrack.model;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fiap.pettrack.model.enums.SexoPetEnum;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
@@ -67,24 +68,31 @@ public class Pet {
     @Schema(description = "Clínica vinculada ao Pet.")
     private Clinica clinica;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "pet", fetch = FetchType.LAZY)
     private List<EventoClinico> eventos;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "pet", fetch = FetchType.LAZY)
     private List<ProtocoloPreventivo> protocolos;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "pet", fetch = FetchType.LAZY)
     private List<Notificacao> notificacoes;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "pet", fetch = FetchType.LAZY)
     private List<ScoreHistorico> scores;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "pet", fetch = FetchType.LAZY)
     private List<BCSHistorico> bcsHistoricos;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "pet", fetch = FetchType.LAZY)
     private List<CollarLeitura> collarLeituras;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "pet", fetch = FetchType.LAZY)
     private List<Alerta> alertas;
 

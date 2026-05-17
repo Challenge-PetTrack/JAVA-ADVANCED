@@ -1,5 +1,6 @@
 package com.fiap.pettrack.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
@@ -50,9 +51,11 @@ public class Tutor {
     @Schema(description = "Atributo da data que o tutor foi registrado.")
     private LocalDate dataCadastro;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "tutor", fetch = FetchType.LAZY)
     private List<Pet> pets;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "tutor", fetch = FetchType.LAZY)
     private List<Notificacao> notificacoes;
 

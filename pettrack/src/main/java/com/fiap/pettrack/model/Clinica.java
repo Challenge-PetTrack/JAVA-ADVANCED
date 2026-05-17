@@ -1,5 +1,6 @@
 package com.fiap.pettrack.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
@@ -52,9 +53,11 @@ public class Clinica {
     @Schema(description = "Data de cadastro da clínica.")
     private LocalDate dataCadastro;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "clinica", fetch = FetchType.LAZY)
     private List<Pet> pets;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "clinica", fetch = FetchType.LAZY)
     private List<EventoClinico> eventos;
 
