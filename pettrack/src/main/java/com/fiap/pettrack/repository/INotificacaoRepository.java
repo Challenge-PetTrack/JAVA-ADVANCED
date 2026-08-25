@@ -12,6 +12,8 @@ public interface INotificacaoRepository extends JpaRepository<Notificacao, Long>
 
     List<Notificacao> findByStatus(SimNaoEnum status);
 
+    List<Notificacao> findByTutorId(Long idTutor);
+
     List<Notificacao> findByTipo(TipoNotificacaoEnum tipo);
 
     // Native — busca notificações urgentes não lidas

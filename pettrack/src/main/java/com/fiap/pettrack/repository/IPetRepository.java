@@ -12,6 +12,8 @@ public interface IPetRepository extends JpaRepository<Pet, Long> {
 
     List<Pet> findByClinicaId(Long idClinica);
 
+    List<Pet> findByTutorId(Long idTutor);
+
     List<Pet> findBySexo(SexoPetEnum sexo);
 
     @Query("SELECT p FROM Pet p WHERE " +
