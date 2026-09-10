@@ -1,19 +1,14 @@
-FROM maven:3.9.6-eclipse-temurin-21
-
+# Stage 1: Build
+FROM maven:3.9.6-eclipse-temurin-21-slim AS builder
 WORKDIR /app
+COPY pom.xml .
+RUN mvn dependency:go-offline -B
+COPY src ./src
+RUN mvn clean package -DskipTests -B
 
-COPY . /app
-
-ENV SPRING_DATASOURCE_URL=jdbc:oracle:thin:@oracle-pettrack:1521/XEPDB1
-ENV SPRING_DATASOURCE_USERNAME=rm563719
-ENV SPRING_DATASOURCE_PASSWORD=111206
-
-RUN useradd -m -s /bin/bash appuser
-
-RUN chown -R appuser:appuser /app
-
-USER appuser
-
+# Stage 2: Runtime (JRE apenas, imagem menor)
+FROM eclipse-temurin:21-jre-alpine
+WORKDIR /app
+COPY --from=builder /app/target/*.jar app.jar
 EXPOSE 8080
-
-CMD ["bash", "-c", "mvn clean package -DskipTests && java -jar target/*.jar"]
+ENTRYPOINT ["java", "-Xmx256m", "-jar", "app.jar"]
