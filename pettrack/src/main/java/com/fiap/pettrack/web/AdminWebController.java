@@ -8,6 +8,8 @@ import com.fiap.pettrack.repository.IClinicaRepository;
 import com.fiap.pettrack.repository.IPetRepository;
 import com.fiap.pettrack.repository.ITutorRepository;
 import com.fiap.pettrack.service.fluxos.TelemetriaCollarFluxoService;
+import com.fiap.pettrack.service.PetProcedureService;
+import org.springframework.dao.DataAccessException;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -34,6 +36,8 @@ public class AdminWebController {
 
     @Autowired
     private TelemetriaCollarFluxoService telemetriaFluxoService;
+    @Autowired
+    private PetProcedureService procedureService;
 
     @GetMapping("/dashboard")
     public String dashboard(Model model) {
@@ -74,7 +78,19 @@ public class AdminWebController {
             return "admin/pet-form";
         }
 
-        petRepository.save(pet);
+        try {
+            if (pet.getId() == null) {
+                procedureService.inserir(pet);
+            } else {
+                petRepository.save(pet);
+            }
+        } catch (DataAccessException e) {
+            result.reject("cadastro.oracle", "Nao foi possivel salvar o pet no Oracle. Confira os dados informados.");
+            model.addAttribute("tutores", tutorRepository.findAll());
+            model.addAttribute("clinicas", clinicaRepository.findAll());
+            model.addAttribute("sexos", SexoPetEnum.values());
+            return "admin/pet-form";
+        }
         redirectAttributes.addFlashAttribute("mensagemSucesso", "Pet '" + pet.getNome() + "' cadastrado/atualizado com sucesso!");
         return "redirect:/admin/pets";
     }

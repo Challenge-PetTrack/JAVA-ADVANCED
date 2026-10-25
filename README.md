@@ -1,7 +1,7 @@
 # 🐾 PetTrack — Sistema Operacional de Saúde Animal e Monitoramento Contínuo
 
 > **FIAP Challenge 2026 · 2º Ano ADS (Turma 2TDS Fevereiro)**  
-> **Disciplina:** Java Advanced — **Sprint 3: Web MVC, Spring Security, Flyway & Fluxos de Negócio**  
+> **Disciplina:** Java Advanced — **Sprint 4: Consolidação, procedures Oracle e integração com MongoDB**  
 > **Parceiro de Negócio:** Clyvo Vet  
 
 ---
@@ -87,10 +87,20 @@ spring.flyway.locations=classpath:db/migration
    `src/main/java/com/fiap/pettrack/PetTrackApplication.java`.
 
 #### Opção B: Executando via Linha de Comando (Terminal)
-```bash
-# Dentro do diretório pettrack
-mvn clean spring-boot:run
+```powershell
+# Dentro do diretório pettrack; use o JDK 21 instalado.
+$env:JAVA_HOME = 'C:\Users\Sbrana\.jdks\ms-21.0.11'
+.\mvnw.cmd -DskipTests package
+# Após BUILD SUCCESS:
+& "$env:JAVA_HOME\bin\java.exe" -jar '.\target\PetTrack-0.0.1-SNAPSHOT.jar'
 ```
+
+No Windows validado, o caractere `°` no caminho da pasta causa uma falha de
+codificação no arquivo de argumentos usado por `spring-boot:run`, resultando em
+`ClassNotFoundException` mesmo com a classe principal compilada. Executar o JAR
+contorna essa falha sem alterar o código, a versão do Spring Boot ou a pasta.
+`-DskipTests` apenas evita executar testes durante a geração do JAR; os comandos
+para executar os testes continuam documentados na seção da Sprint 4.
 
 A aplicação iniciará na porta **`8080`**. O Flyway executará as migrações automaticamente no banco de dados e o `DataInitializer` garantirá a disponibilidade dos usuários de teste.
 
@@ -164,3 +174,29 @@ A aplicação iniciará na porta **`8080`**. O Flyway executará as migrações 
 * **DRY (Don't Repeat Yourself):** Reutilização de cabeçalhos, navegação, alertas globais e rodapés através de fragmentos modulares do Thymeleaf (`fragments/layout.html`).
 * **Clean Code:** Nomes autoexplicativos em classes e métodos, tratamento centralizado de exceções e uso de DTOs e MapStruct para proteger as entidades de domínio.
 * **Idempotência no Banco:** Migrações Flyway e rotinas de carga projetadas para execução segura e reproduzível em qualquer ambiente de banco de dados Oracle.
+
+
+---
+
+## Integração com Banco de Dados - Sprint 4
+
+O cadastro de novos pets pela API `/pet/novo` e pelo formulário `/admin/pets/novo`
+utiliza `PKG_PETTRACK_CADASTRO.PRC_INSERT_PET`, na mesma conexão Oracle existente.
+A nova migração `V4__packages_pettrack.sql` instala os quatro packages e adapta
+o trigger de auditoria; as migrations anteriores permanecem intactas.
+
+ADMIN e VET têm acesso a `/pet/exportar-json` (download de dataset Oracle real)
+e `/pet/relatorio-atividades` (relatório manual de subtotais). A lógica de JDBC
+fica em `PetProcedureRepository`; a integração transacional, em
+`PetProcedureService`. Nenhuma dependência nova foi acrescentada ao pom.xml.
+
+Os scripts Oracle/MongoDB, o PDF dos modelos, o dataset, os comandos de validação
+e o roteiro do vídeo estão na pasta irmã
+`MASTERING-RELATIONAL-NON-RELATIONAL-DATABASE`, seção **Sprint 4** do README.
+O schema deve conter a estrutura aprovada na Sprint 3, inclusive a auditoria.
+
+Testes unitários: `./mvnw -Dtest=PetProcedureServiceTest test`.
+Integração Oracle: definir `PETTRACK_ORACLE_TESTS=true` e executar
+`./mvnw -Dtest=PetProcedureOracleIT test`.
+Migração: `./mvnw -Dtest=PetTrackFlywayOracleIT test` com a mesma variável.
+Os testes de integração reais são de execução explícita.

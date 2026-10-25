@@ -7,12 +7,18 @@ import com.fiap.pettrack.model.enums.SexoPetEnum;
 import com.fiap.pettrack.repository.IPetRepository;
 import com.fiap.pettrack.service.PetCachingService;
 import com.fiap.pettrack.service.PetPaginacaoService;
+import com.fiap.pettrack.service.PetProcedureService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.web.server.ResponseStatusException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -32,6 +38,8 @@ public class PetController {
     private PetCachingService cachingService;
     @Autowired
     private PetPaginacaoService paginacaoService;
+    @Autowired
+    private PetProcedureService procedureService;
 
     @Operation(description = "Retorna todos os pets", summary = "Retorna PetDTO", tags = "Retorno de Informações")
     @GetMapping("/todos")
@@ -91,9 +99,28 @@ public class PetController {
     @Operation(description = "Inserir novo Pet", summary = "Inserir Pet", tags = "Inserção de Informações")
     @PostMapping("/novo")
     public ResponseEntity<PetDTO> inserirPet(@RequestBody @Valid PetDTO petDTO) {
-        Pet salvo = repository.save(mapper.toEntity(petDTO));
-        cachingService.removerCache();
-        return ResponseEntity.status(HttpStatus.CREATED).body(mapper.toDTO(salvo));
+        try {
+            Pet salvo = procedureService.inserir(mapper.toEntity(petDTO));
+            return ResponseEntity.status(HttpStatus.CREATED).body(mapper.toDTO(salvo));
+        } catch (DataIntegrityViolationException e) {
+            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Dados rejeitados pelo Oracle.", e);
+        }
+    }
+
+    @Operation(summary = "Exporta pets do Oracle para JSON por procedure empacotada", tags = "Sprint 4 - Banco de Dados")
+    @PreAuthorize("hasAnyRole('ADMIN', 'VET')")
+    @GetMapping(value = "/exportar-json", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> exportarJson(@RequestParam(required = false) String especie) {
+        return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"pets.json\"")
+                .contentType(MediaType.APPLICATION_JSON).body(procedureService.exportarJson(especie));
+    }
+
+    @Operation(summary = "Executa o relatorio manual de subtotais do Oracle", tags = "Sprint 4 - Banco de Dados")
+    @PreAuthorize("hasAnyRole('ADMIN', 'VET')")
+    @GetMapping(value = "/relatorio-atividades", produces = "text/plain;charset=UTF-8")
+    public ResponseEntity<String> relatorioAtividades() {
+        return ResponseEntity.ok().contentType(new MediaType("text", "plain", java.nio.charset.StandardCharsets.UTF_8))
+                .body(procedureService.relatorioAtividades());
     }
 
     @Operation(description = "Remover Pet", summary = "Remover Pet", tags = "Remoção de Informações")
