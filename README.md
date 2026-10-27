@@ -1,5 +1,11 @@
 # 🐾 PetTrack — Sistema Operacional de Saúde Animal e Monitoramento Contínuo
 
+## Integração IoT — contexto do Health Report
+
+A prioridade 1 da sprint 4 de IoT adiciona `GET /health-context/pets/{idPet}`, com consolidação dos dados e controle de acesso por tutor/clínica. Consulte a [documentação do contexto](pettrack/docs/health-context.md).
+
+A prioridade 2 adiciona `POST /health-reports/pets/{idPet}/generate`, integrando a geração ao serviço Python com autenticação e validação da resposta. Consulte a [documentação da geração e dos testes](pettrack/docs/health-report.md). Persistência e interface serão implementadas nas prioridades seguintes.
+
 > **FIAP Challenge 2026 · 2º Ano ADS (Turma 2TDS Fevereiro)**  
 > **Disciplina:** Java Advanced — **Sprint 4: Consolidação, procedures Oracle e integração com MongoDB**  
 > **Parceiro de Negócio:** Clyvo Vet  
