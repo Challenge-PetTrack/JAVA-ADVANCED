@@ -7,6 +7,33 @@
     --card-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
 }
 
+.report-page { max-width: 1120px; }
+.report-detail { max-width: 1000px; }
+.report-page h1 { overflow-wrap: anywhere; }
+.report-prose { white-space: pre-line; overflow-wrap: anywhere; line-height: 1.7; }
+.report-level { display: inline-block; padding: .35rem .7rem; border-radius: 999px; font-size: .875rem; font-weight: 700; }
+.report-level.BAIXO { background: #dcfce7; color: #166534; }
+.report-level.MODERADO { background: #fef3c7; color: #92400e; }
+.report-level.ALTO { background: #fee2e2; color: #991b1b; }
+.report-level.INDETERMINADO { background: #e2e8f0; color: #334155; }
+.report-reason + .report-reason { margin-top: 1.25rem; padding-top: 1.25rem; border-top: 1px solid #e2e8f0; }
+.report-list { padding-left: 1.3rem; }
+.report-list li + li { margin-top: .65rem; }
+.report-facts dt, .report-facts dd { padding-top: .35rem; overflow-wrap: anywhere; }
+.report-page summary { cursor: pointer; }
+.report-page a:focus-visible, .report-page button:focus-visible, .report-page summary:focus-visible { outline: 3px solid #2563eb; outline-offset: 4px; }
+.report-history { min-width: 580px; }
+@media (max-width: 575px) { .report-page .card { padding: 1.25rem !important; } }
+@media print {
+    body { background: white; color: black; }
+    nav, footer, .report-actions, .alert-dismissible, [data-gerar-relatorio] { display: none !important; }
+    .report-detail { max-width: none; width: 100%; margin: 0 !important; }
+    .report-detail .card { box-shadow: none; border: 1px solid #ddd; break-inside: avoid; }
+    .report-detail .row { display: block; }
+    .report-detail .col-lg-6 { width: 100%; margin-bottom: 1rem; }
+    .report-provenance { display: none; }
+}
+
 body {
     background-color: var(--light-bg);
     font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
@@ -20,7 +47,6 @@ body {
     flex: 1;
 }
 
-/* Navbar */
 .navbar-pettrack {
     background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
     box-shadow: 0 2px 10px rgba(0,0,0,0.15);
@@ -32,7 +58,6 @@ body {
     letter-spacing: -0.5px;
 }
 
-/* Cards & Stats */
 .card-stat {
     border: none;
     border-radius: 12px;
@@ -59,7 +84,6 @@ body {
     font-weight: 600;
 }
 
-/* Badges */
 .badge-role {
     font-size: 0.75rem;
     font-weight: 600;
@@ -82,7 +106,6 @@ body {
     color: #3730a3;
 }
 
-/* Footer */
 footer {
     background-color: #ffffff;
     border-top: 1px solid #e2e8f0;

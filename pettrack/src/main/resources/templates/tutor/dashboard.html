@@ -7,7 +7,6 @@
     <div th:replace="~{fragments/layout :: alertas}"></div>
 
     <main class="container my-4 main-content">
-        <!-- Boas-vindas -->
         <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
             <div>
                 <h2 class="fw-bold text-dark mb-1">Olá, <span th:text="${usuario != null ? usuario.nome : 'Tutor(a)'}"></span>! 🐾</h2>
@@ -18,7 +17,6 @@
             </a>
         </div>
 
-        <!-- Meus Pets (Grid de Cards) -->
         <h4 class="fw-bold text-dark mb-3"><i class="bi bi-heart-pulse-fill text-danger me-2"></i> Meus Pets</h4>
         <div class="row g-4 mb-5">
             <div class="col-md-6 col-lg-4" th:each="p : ${pets}">
@@ -49,6 +47,7 @@
                     </div>
 
                     <div class="mt-auto d-flex gap-2">
+                        <a th:href="@{/relatorios/pets/{id}(id=${p.id})}" class="btn btn-primary btn-sm fw-semibold">Relatórios de saúde</a>
                         <a th:href="@{/portal-tutor/pet/{id}(id=${p.id})}" class="btn btn-outline-primary w-100 btn-sm fw-semibold">
                             <i class="bi bi-journal-medical me-1"></i> Ver Carteirinha
                         </a>
@@ -64,7 +63,6 @@
             </div>
         </div>
 
-        <!-- Notificações e Lembretes -->
         <h4 class="fw-bold text-dark mb-3"><i class="bi bi-bell-fill text-warning me-2"></i> Notificações Recentes</h4>
         <div class="card card-custom">
             <div class="card-body p-0">

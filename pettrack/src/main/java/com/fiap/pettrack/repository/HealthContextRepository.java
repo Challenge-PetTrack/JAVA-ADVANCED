@@ -13,7 +13,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
-/** Consultas somente de leitura. JDBC preserva a hora do DATE Oracle que os modelos LocalDate omitem. */
 @Repository
 @RequiredArgsConstructor
 public class HealthContextRepository {

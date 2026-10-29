@@ -30,7 +30,7 @@ public class HealthReportConfig {
             }
         };
         factory.setConnectTimeout(Duration.ofSeconds(3));
-        factory.setReadTimeout(Duration.ofSeconds(40));
+        factory.setReadTimeout(Duration.ofSeconds(120));
         return builder.baseUrl(url).requestFactory(factory).build();
     }
 }

@@ -23,7 +23,7 @@ final class HealthReportFixtures {
 
     static HealthReportDTO resultado() {
         return new HealthReportDTO(UUID.randomUUID(), 1L, OffsetDateTime.parse("2026-10-27T15:00:05Z"),
-                contexto().geradoEm(), "openai", "gpt-4o", "health-report-v1", false, false,
+                contexto().geradoEm(), "gemini", "gemini-3.8-flash", "health-report-v1", false, false,
                 new HealthReportDTO.Relatorio("Revisar os dados com o veterinario.", HealthReportDTO.NivelAtencao.MODERADO,
                         List.of(new HealthReportDTO.Motivo("BCS com tendencia crescente.", List.of("bcs"))),
                         List.of("Acompanhar os registros junto ao veterinario."), List.of("Dados limitados ao contexto.")));

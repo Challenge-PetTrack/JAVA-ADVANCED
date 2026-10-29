@@ -26,17 +26,7 @@ public class HealthContextService {
     private final Clock clock;
 
     public HealthContextDTO montar(Long idPet, Usuario usuario) {
-        if (usuario == null || !usuario.isEnabled()) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Autenticacao necessaria");
-        }
-        if (idPet == null || idPet <= 0) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "ID do pet deve ser positivo");
-        }
-        Pet pet = pets.findById(idPet)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Pet nao encontrado"));
-        if (!podeAcessar(usuario, pet)) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Sem acesso a este pet");
-        }
+        Pet pet = autorizar(idPet, usuario);
         OffsetDateTime agora = OffsetDateTime.now(clock).withNano(0);
         var fim = agora.toLocalDateTime();
         var inicio = fim.minusHours(24);
@@ -70,6 +60,21 @@ public class HealthContextService {
                 new PerfilPet(pet.getId(), pet.getNome(), pet.getEspecie(), pet.getRaca(), idade, peso),
                 new Periodo(inicio, fim), iot, new BcsResumo(ultima, anterior, tendencia),
                 historico, clima, List.copyOf(avisos));
+    }
+
+    public Pet autorizar(Long idPet, Usuario usuario) {
+        if (usuario == null || !usuario.isEnabled()) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Autenticacao necessaria");
+        }
+        if (idPet == null || idPet <= 0) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "ID do pet deve ser positivo");
+        }
+        Pet pet = pets.findById(idPet)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Pet nao encontrado"));
+        if (!podeAcessar(usuario, pet)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Sem acesso a este pet");
+        }
+        return pet;
     }
 
     private boolean podeAcessar(Usuario usuario, Pet pet) {

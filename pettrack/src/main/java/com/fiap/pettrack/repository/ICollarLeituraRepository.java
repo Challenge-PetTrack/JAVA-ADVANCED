@@ -8,12 +8,10 @@ import java.util.List;
 
 public interface ICollarLeituraRepository extends JpaRepository<CollarLeitura, Long> {
 
-    // JPQL — busca leituras com temperatura acima do normal
     @Query("SELECT c FROM CollarLeitura c WHERE " +
             "c.pet.id = :idPet AND c.temperatura > :temperatura")
     List<CollarLeitura> buscarPorPetETemperaturaAcimaDe(Long idPet, Double temperatura);
 
-    // Native — busca última leitura por pet
     @Query(nativeQuery = true, value =
             "SELECT * FROM TB_COLLAR_LEITURA " +
                     "WHERE ID_PET = :idPet " +

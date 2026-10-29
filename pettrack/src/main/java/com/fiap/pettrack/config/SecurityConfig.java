@@ -47,22 +47,16 @@ public class SecurityConfig {
             .authenticationProvider(authenticationProvider())
             .csrf(csrf -> csrf.ignoringRequestMatchers("/swagger/**", "/v3/api-docs/**", "/pet/**", "/clinica/**", "/collar/**", "/adesao/**", "/alerta/**", "/evento/**", "/medicamento/**", "/notificacao/**", "/protocolo/**", "/score/**", "/bcs/**", "/tutor/**"))
             .authorizeHttpRequests(auth -> auth
-                // Recursos estáticos públicos
                 .requestMatchers("/css/**", "/js/**", "/images/**", "/webjars/**", "/favicon.ico").permitAll()
                 
-                // Rotas de autenticação, erro e documentação Swagger
                 .requestMatchers("/login", "/registro", "/error", "/403", "/swagger/**", "/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**").permitAll()
                 
-                // Rotas exclusivas de Administrador / Veterinário
                 .requestMatchers("/admin/**").hasAnyRole("ADMIN", "VET")
                 
-                // Rotas do portal do Tutor
                 .requestMatchers("/portal-tutor/**").hasRole("TUTOR")
                 
-                // Dashboard geral redireciona baseado na role
                 .requestMatchers("/", "/dashboard").authenticated()
                 
-                // APIs REST permitidas para testes e integrações
                 .requestMatchers(HttpMethod.GET, "/pet/**", "/clinica/**", "/alerta/**", "/score/**", "/collar/**").permitAll()
                 .requestMatchers("/pet/**", "/clinica/**", "/collar/**", "/adesao/**", "/alerta/**", "/evento/**", "/medicamento/**", "/notificacao/**", "/protocolo/**", "/score/**", "/bcs/**").authenticated()
 

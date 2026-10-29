@@ -25,8 +25,6 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-// Execucao explicita: PETTRACK_ORACLE_TESTS=true e -Dtest=PetProcedureOracleIT.
-// Packages previamente instalados. Flyway/initializer desativados para nao alterar a base nos testes.
 @EnabledIfEnvironmentVariable(named = "PETTRACK_ORACLE_TESTS", matches = "true")
 @SpringBootTest(properties = {"spring.flyway.enabled=false", "spring.jpa.show-sql=false"})
 @AutoConfigureMockMvc

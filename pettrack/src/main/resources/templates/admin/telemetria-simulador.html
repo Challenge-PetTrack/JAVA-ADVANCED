@@ -10,7 +10,6 @@
         <div class="row justify-content-center">
             <div class="col-lg-9">
 
-                <!-- Cabeçalho -->
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <div>
                         <span class="badge bg-warning text-dark mb-1 fw-bold">FLUXO DE NEGÓCIO 1</span>
@@ -22,11 +21,9 @@
                     </a>
                 </div>
 
-                <!-- Formulário de Simulação -->
                 <div class="card card-custom p-4 shadow-sm mb-4">
                     <h5 class="fw-bold text-dark mb-3"><i class="bi bi-cpu text-primary me-2"></i> Injetar Telemetria IoT</h5>
                     
-                    <!-- Botões Rápidos de Cenários de Teste -->
                     <div class="mb-4 p-3 bg-light rounded-3">
                         <small class="fw-bold text-muted d-block mb-2">PRESETS DE TESTE RÁPIDO:</small>
                         <div class="d-flex gap-2 flex-wrap">
@@ -44,7 +41,6 @@
 
                     <form th:action="@{/admin/telemetria/processar}" th:object="${telemetriaInput}" method="post">
                         <div class="row g-3">
-                            <!-- Seleção do Pet -->
                             <div class="col-md-6">
                                 <label for="idPet" class="form-label fw-semibold">Paciente (Pet) <span class="text-danger">*</span></label>
                                 <select class="form-select" id="idPet" th:field="*{idPet}" required>
@@ -53,13 +49,11 @@
                                 </select>
                             </div>
 
-                            <!-- Tópico MQTT -->
                             <div class="col-md-6">
                                 <label for="topicoMqtt" class="form-label fw-semibold">Tópico MQTT</label>
                                 <input type="text" class="form-control" id="topicoMqtt" th:field="*{topicoMqtt}" placeholder="pettrack/collar/simulador">
                             </div>
 
-                            <!-- Temperatura (°C) -->
                             <div class="col-md-6">
                                 <label for="temperatura" class="form-label fw-semibold">Temperatura Corporal (°C) <span class="text-danger">*</span></label>
                                 <div class="input-group">
@@ -69,7 +63,6 @@
                                 <small class="text-muted">Normal: 38.0°C a 39.2°C | Crítico (Febre): >= 39.5°C</small>
                             </div>
 
-                            <!-- Nível de Atividade -->
                             <div class="col-md-6">
                                 <label for="atividade" class="form-label fw-semibold">Nível de Atividade Física <span class="text-danger">*</span></label>
                                 <div class="input-group">
@@ -88,7 +81,6 @@
                     </form>
                 </div>
 
-                <!-- Card de Resultado do Processamento do Fluxo -->
                 <div th:if="${resultado}" class="card card-custom p-4 shadow-sm border-start border-4" 
                      th:classappend="${resultado.febreDetectada or resultado.sedentarismoDetectado ? 'border-danger' : 'border-success'}">
                     <h5 class="fw-bold mb-3 d-flex align-items-center gap-2">

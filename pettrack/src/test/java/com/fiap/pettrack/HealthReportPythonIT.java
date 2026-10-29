@@ -8,7 +8,6 @@ import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable;
 import org.springframework.web.client.RestClient;
 import static org.junit.jupiter.api.Assertions.*;
 
-/** Python real em loopback, modo mock explicito; somente dados sinteticos, sem Oracle ou IA externa. */
 @EnabledIfEnvironmentVariable(named = "PETTRACK_HEALTH_REPORT_SMOKE", matches = "true")
 class HealthReportPythonIT {
     @Test void javaEnviaContratoRealAoPythonERecebeRelatorioValidado() {

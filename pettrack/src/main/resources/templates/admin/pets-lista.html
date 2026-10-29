@@ -52,6 +52,7 @@
                                 <td th:text="${pet.tutor != null ? pet.tutor.nome : 'Sem tutor'}"></td>
                                 <td th:text="${pet.clinica != null ? pet.clinica.nome : 'Sem clínica'}"></td>
                                 <td class="text-end">
+                                    <a th:href="@{/relatorios/pets/{id}(id=${pet.id})}" class="btn btn-sm btn-outline-primary me-1" th:aria-label="'Relatórios de saúde de ' + ${pet.nome}">Relatórios</a>
                                     <a th:href="@{/admin/pets/editar/{id}(id=${pet.id})}" class="btn btn-sm btn-outline-secondary me-1" title="Editar">
                                         <i class="bi bi-pencil"></i>
                                     </a>

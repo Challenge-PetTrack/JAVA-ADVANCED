@@ -62,7 +62,6 @@ public class TelemetriaCollarFluxoService {
         Pet pet = petRepository.findById(input.getIdPet())
                 .orElseThrow(() -> new IllegalArgumentException("Pet não encontrado para o ID: " + input.getIdPet()));
 
-        // 1. Grava a Leitura IoT do Colar
         CollarLeitura leitura = new CollarLeitura();
         leitura.setTemperatura(input.getTemperatura());
         leitura.setAtividade(input.getAtividade());
@@ -74,7 +73,6 @@ public class TelemetriaCollarFluxoService {
         boolean sedentarismo = false;
         double scoreCalculado = 100.0;
 
-        // 2. Análise de Febre (Temperatura >= 39.5 °C)
         if (input.getTemperatura() != null && input.getTemperatura() >= 39.5) {
             febre = true;
             scoreCalculado -= 35.0;
@@ -97,7 +95,6 @@ public class TelemetriaCollarFluxoService {
             notificacaoRepository.save(notifFebre);
         }
 
-        // 3. Análise de Atividade / Sedentarismo (< 20 minutos ou pontos)
         if (input.getAtividade() != null && input.getAtividade() < 20.0) {
             sedentarismo = true;
             scoreCalculado -= 20.0;
@@ -123,7 +120,6 @@ public class TelemetriaCollarFluxoService {
         if (scoreCalculado < 0.0) scoreCalculado = 0.0;
         if (scoreCalculado > 100.0) scoreCalculado = 100.0;
 
-        // 4. Recálculo e Atualização do Health Score
         ScoreHistorico scoreHist = new ScoreHistorico();
         scoreHist.setScore(scoreCalculado);
         scoreHist.setObservacao(febre ? "Score recalculado após detecção de febre" : (sedentarismo ? "Score recalculado após baixa atividade" : "Score regular de telemetria"));

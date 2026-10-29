@@ -41,7 +41,7 @@ public class AdesaoMedicamentoFluxoService {
     public static class AdesaoInput {
         private Long idMedicamento;
         private LocalDate dataDose;
-        private String tomou; // "S" ou "N"
+        private String tomou;
         private String observacao;
     }
 
@@ -68,7 +68,6 @@ public class AdesaoMedicamentoFluxoService {
         Pet pet = medicamento.getEvento().getPet();
         SimNaoEnum statusDose = "S".equalsIgnoreCase(input.getTomou()) ? SimNaoEnum.S : SimNaoEnum.N;
 
-        // 1. Registra a adesão da dose
         AdesaoMedicamento adesao = new AdesaoMedicamento();
         adesao.setMedicamento(medicamento);
         adesao.setDataDose(input.getDataDose() != null ? input.getDataDose() : LocalDate.now());
@@ -76,7 +75,6 @@ public class AdesaoMedicamentoFluxoService {
         adesao.setObservacao(input.getObservacao());
         adesaoMedicamentoRepository.save(adesao);
 
-        // 2. Calcula taxa percentual de adesão
         List<AdesaoMedicamento> historicoDoses = adesaoMedicamentoRepository.findByMedicamentoId(medicamento.getId());
         long totalDoses = historicoDoses.size();
         long dosesTomadas = historicoDoses.stream().filter(d -> d.getStatus() == SimNaoEnum.S).count();
@@ -85,7 +83,6 @@ public class AdesaoMedicamentoFluxoService {
 
         boolean alertaGerado = false;
 
-        // 3. Se a dose foi NÃO tomada ('N'), dispara alerta clínico e notificação de urgência
         if (statusDose == SimNaoEnum.N) {
             alertaGerado = true;
 

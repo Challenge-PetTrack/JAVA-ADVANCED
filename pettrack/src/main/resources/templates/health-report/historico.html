@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Relatórios de saúde')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+<div th:replace="~{fragments/layout :: alertas}"></div>
+<main class="container my-4 main-content report-page">
+    <a th:href="${voltar}" class="text-decoration-none small">← Voltar aos pets</a>
+    <header class="d-flex justify-content-between align-items-start gap-3 flex-wrap my-3">
+        <div><p class="text-primary fw-semibold mb-1">Acompanhamento de saúde</p>
+            <h1 class="h2 fw-bold">Relatórios de <span th:text="${pet.nome}"></span></h1>
+            <p class="text-muted">Consulte análises anteriores ou gere uma nova com os registros atuais.</p></div>
+        <a th:if="${historico.total > 0}" th:href="@{/relatorios/pets/{id}/latest(id=${pet.id})}" class="btn btn-outline-primary">Ver último relatório</a>
+    </header>
+    <section class="card card-custom p-4 mb-4" aria-labelledby="nova-analise">
+        <h2 class="h5 fw-bold" id="nova-analise">Uma nova análise dos registros do pet</h2>
+        <p>O relatório reúne dados dos sensores, condição corporal e histórico clínico disponíveis. A geração é feita por IA e fica salva para consulta.</p>
+        <form th:action="@{/relatorios/pets/{id}/gerar(id=${pet.id})}" method="post" data-gerar-relatorio>
+            <button type="submit" class="btn btn-primary">Gerar novo relatório</button>
+            <p class="small text-muted mt-2 mb-0" role="status" aria-live="polite"></p>
+        </form>
+    </section>
+    <section class="card card-custom p-4" aria-labelledby="titulo-historico">
+        <div class="d-flex align-items-center justify-content-between gap-2 mb-3"><h2 class="h5 fw-bold mb-0" id="titulo-historico">Histórico de relatórios</h2>
+            <span class="text-muted small" th:text="${historico.total} + ' registro(s)'">0 registros</span></div>
+        <div th:if="${historico.total == 0}" class="report-empty text-center py-4">
+            <i class="bi bi-journal-medical fs-1 text-primary" aria-hidden="true"></i>
+            <h3 class="h5 mt-3">O primeiro relatório começa aqui</h3>
+            <p class="text-muted mb-0">Ainda não há análises salvas para este pet. Use “Gerar novo relatório” para começar.</p>
+        </div>
+        <div th:if="${historico.total > 0}" class="table-responsive">
+            <table class="table align-middle report-history">
+                <caption>Relatórios salvos, do mais recente para o mais antigo. Horários de Brasília.</caption>
+                <thead><tr><th scope="col">Gerado em</th><th scope="col">Nível de atenção</th><th scope="col">Origem</th><th scope="col">Relatório</th></tr></thead>
+                <tbody><tr th:each="item : ${historico.itens}">
+                    <td th:text="${view.data(item.geradoEm)}"></td>
+                    <td><span class="report-level" th:classappend="${item.nivelAtencao.name()}" th:text="${view.nivel(item.nivelAtencao)}"></span></td>
+                    <td><span th:if="${item.simulado}" class="badge text-bg-warning">Simulação</span><span th:unless="${item.simulado}">Gerado por IA</span></td>
+                    <td><a th:href="@{/relatorios/pets/{pet}/{id}(pet=${pet.id},id=${item.idGeracao})}" class="btn btn-outline-primary btn-sm" th:aria-label="'Ler relatório de ' + ${view.data(item.geradoEm)}">Ler relatório</a></td>
+                </tr><tr th:if="${#lists.isEmpty(historico.itens)}"><td colspan="4">Esta página não tem registros. Volte à página anterior.</td></tr></tbody>
+            </table>
+        </div>
+        <nav th:if="${historico.total > 0}" aria-label="Páginas do histórico" class="d-flex align-items-center justify-content-between gap-2 mt-3">
+            <a th:if="${historico.pagina > 0}" th:href="@{/relatorios/pets/{id}(id=${pet.id},pagina=${historico.pagina - 1})}" class="btn btn-outline-secondary btn-sm">Anterior</a>
+            <span th:unless="${historico.pagina > 0}"></span>
+            <span class="small text-muted" th:text="'Página ' + ${historico.pagina + 1}"></span>
+            <a th:if="${(historico.pagina + 1L) * historico.tamanho < historico.total}" th:href="@{/relatorios/pets/{id}(id=${pet.id},pagina=${historico.pagina + 1})}" class="btn btn-outline-secondary btn-sm">Próxima</a>
+            <span th:unless="${(historico.pagina + 1L) * historico.tamanho < historico.total}"></span>
+        </nav>
+    </section>
+    <p class="small text-muted mt-3">O nível de atenção é uma sugestão de revisão dos registros. Este relatório não substitui avaliação veterinária.</p>
+    <noscript><p class="small text-muted">Após solicitar uma geração, aguarde o carregamento da próxima página antes de enviar novamente.</p></noscript>
+</main>
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<script th:replace="~{fragments/layout :: scripts}"></script>
+<script th:src="@{/js/health-report.js}" defer></script>
+</body></html>

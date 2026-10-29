@@ -15,7 +15,6 @@ import java.util.Properties;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-/** Opt-in: somente SELECT em transacao Oracle READ ONLY. Nao inicia Spring, Flyway ou DataInitializer. */
 @EnabledIfEnvironmentVariable(named = "PETTRACK_ORACLE_CONTEXT_TESTS", matches = "true")
 class HealthContextOracleIT {
     @Test void consultasExecutamNoOracleSemAlterarDados() throws Exception {

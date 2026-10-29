@@ -24,7 +24,6 @@ class HealthContextRepositoryTest {
 
     @BeforeEach void setup() {
         ds = new SingleConnectionDataSource("jdbc:h2:mem:" + UUID.randomUUID() + ";MODE=Oracle", "sa", "", true);
-        // Mesmo DDL estrutural da aplicacao; nao executa packages, migracoes ou seeds em Oracle.
         new ResourceDatabasePopulator(new ClassPathResource("db/migration/V1__criar_tabelas_pettrack.sql")).execute(ds);
         jdbc = new JdbcTemplate(ds);
         repository = new HealthContextRepository(new NamedParameterJdbcTemplate(ds));

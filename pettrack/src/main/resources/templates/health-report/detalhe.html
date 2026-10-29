@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Relatório de saúde')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+<div th:replace="~{fragments/layout :: alertas}"></div>
+<main class="container my-4 main-content report-page report-detail">
+    <div class="d-flex justify-content-between align-items-center gap-3 flex-wrap mb-4 report-actions">
+        <a th:href="@{/relatorios/pets/{id}(id=${geracao.idPet})}" class="text-decoration-none">← Voltar ao histórico</a>
+        <button type="button" class="btn btn-outline-secondary btn-sm" data-imprimir-relatorio hidden>Imprimir relatório</button>
+    </div>
+    <article>
+        <header class="mb-4">
+            <p class="text-primary fw-semibold mb-1">Relatório de saúde</p>
+            <h1 class="h2 fw-bold" th:text="${contexto.pet.nome}"></h1>
+            <p class="text-muted mb-2"><span th:text="${contexto.pet.especie}"></span> · Gerado em <time th:datetime="${geracao.geradoEm}" th:text="${view.data(geracao.geradoEm)}"></time> (Brasília)</p>
+            <span class="badge text-bg-success">Salvo no histórico</span>
+            <span th:if="${geracao.simulado}" class="badge text-bg-warning">Simulação</span>
+            <span th:unless="${geracao.simulado}" class="badge text-bg-light border">Gerado por IA</span>
+        </header>
+        <div th:if="${geracao.simulado}" class="alert alert-warning" role="note"><strong>Relatório de demonstração.</strong> Este conteúdo foi simulado e não é uma análise feita pela IA.</div>
+        <section class="card card-custom p-4 mb-4" aria-labelledby="titulo-resumo">
+            <div class="d-flex justify-content-between align-items-start gap-3 flex-wrap mb-3">
+                <h2 class="h5 fw-bold" id="titulo-resumo">Visão geral</h2>
+                <div><span class="small text-muted me-2">Nível de atenção</span><span class="report-level" th:classappend="${analise.nivelAtencao.name()}" th:text="${view.nivel(analise.nivelAtencao)}"></span></div>
+            </div>
+            <p class="report-prose mb-2" th:text="${analise.resumo}"></p>
+            <p class="small text-muted mb-0">O nível indica uma sugestão de revisão dos registros; não é uma classificação clínica validada.</p>
+        </section>
+        <div class="row g-4 mb-4">
+            <section class="col-lg-6" aria-labelledby="titulo-motivos"><div class="card card-custom p-4 h-100">
+                <h2 class="h5 fw-bold mb-3" id="titulo-motivos">O que merece atenção</h2>
+                <ul class="list-unstyled mb-0"><li th:each="motivo : ${analise.motivos}" class="report-reason">
+                    <p class="report-prose mb-2" th:text="${motivo.descricao}"></p>
+                    <span class="small text-muted">Com base em: </span><span th:each="fonte, stat : ${motivo.fontes}" class="small text-muted" th:text="${view.fonte(fonte)} + (${stat.last} ? '' : ' · ')"></span>
+                </li></ul>
+            </div></section>
+            <section class="col-lg-6" aria-labelledby="titulo-recomendacoes"><div class="card card-custom p-4 h-100">
+                <h2 class="h5 fw-bold mb-3" id="titulo-recomendacoes">Próximos cuidados</h2>
+                <ul class="report-list mb-0"><li th:each="item : ${analise.recomendacoes}" class="report-prose" th:text="${item}"></li></ul>
+            </div></section>
+        </div>
+        <section class="card card-custom p-4 mb-4" aria-labelledby="titulo-limitacoes">
+            <h2 class="h5 fw-bold mb-3" id="titulo-limitacoes">Limites desta análise</h2>
+            <ul class="report-list mb-0"><li th:each="item : ${analise.limitacoes}" class="report-prose" th:text="${item}"></li></ul>
+        </section>
+        <details class="card card-custom p-4 mb-4 report-sources">
+            <summary class="fw-bold">Dados usados nesta análise</summary>
+            <p class="text-muted small mt-3">Esta é uma cópia dos registros usados na geração. Alterações posteriores no cadastro não mudam estes dados.</p>
+            <p class="small">Sensores no período de <span th:text="${view.local(contexto.periodoIot.inicioInclusivo)}"></span> até <span th:text="${view.local(contexto.periodoIot.fimExclusivo)}"></span> (fim exclusivo; <span th:text="${contexto.fusoHorario}"></span>).</p>
+            <dl class="row report-facts">
+                <dt class="col-sm-5">Peso registrado</dt><dd class="col-sm-7" th:text="${view.medida(contexto.pet.pesoKg, ' kg')}"></dd>
+                <dt class="col-sm-5">Leituras dos sensores</dt><dd class="col-sm-7" th:text="${contexto.iotRecente.totalLeituras}"></dd>
+                <dt class="col-sm-5">Temperatura média / máxima</dt><dd class="col-sm-7"><span th:text="${view.medida(contexto.iotRecente.temperaturaMedia, ' °C')}"></span> / <span th:text="${view.medida(contexto.iotRecente.temperaturaMaxima, ' °C')}"></span></dd>
+                <dt class="col-sm-5">Temperaturas válidas</dt><dd class="col-sm-7" th:text="${contexto.iotRecente.temperaturasValidas}"></dd>
+                <dt class="col-sm-5">Atividade média</dt><dd class="col-sm-7" th:text="${view.medida(contexto.iotRecente.atividadeMedia, '')}"></dd>
+                <dt class="col-sm-5">Leituras de atividade válidas</dt><dd class="col-sm-7" th:text="${contexto.iotRecente.atividadesValidas}"></dd>
+                <dt class="col-sm-5">Última leitura</dt><dd class="col-sm-7" th:text="${view.local(contexto.iotRecente.ultimaLeitura)}"></dd>
+                <dt class="col-sm-5">Condição corporal (BCS)</dt><dd class="col-sm-7"><span th:if="${contexto.bcs.ultima != null}"><span th:text="${contexto.bcs.ultima.score}"></span>/9 · <span th:text="${view.local(contexto.bcs.ultima.data)}"></span></span><span th:unless="${contexto.bcs.ultima != null}">Sem avaliação registrada</span></dd>
+                <dt class="col-sm-5">Tendência BCS</dt><dd class="col-sm-7" th:text="${view.tendencia(contexto.bcs.tendencia)}"></dd>
+                <dt class="col-sm-5">Clima</dt><dd class="col-sm-7"><span th:if="${contexto.clima.status == 'DISPONIVEL'}"><span th:text="${view.medida(contexto.clima.temperaturaCelsius, ' °C')}"></span> · <span th:text="${contexto.clima.localidade}"></span> · <span th:text="${contexto.clima.condicao}"></span></span><span th:unless="${contexto.clima.status == 'DISPONIVEL'}">Indisponível nesta análise</span></dd>
+            </dl>
+            <h3 class="h6 fw-bold">Alertas dos sensores</h3>
+            <p th:if="${#lists.isEmpty(contexto.iotRecente.alertas)}" class="small text-muted">Nenhum alerta registrado no período consultado.</p>
+            <ul class="report-list"><li th:each="item : ${contexto.iotRecente.alertas}"><span th:text="${view.local(item.data)}"></span> · <span th:text="${item.descricao}"></span></li></ul>
+            <h3 class="h6 fw-bold">Eventos clínicos registrados</h3>
+            <p th:if="${#lists.isEmpty(contexto.historico.eventosRecentes)}" class="small text-muted">Sem eventos no período consultado. A ausência de registros não comprova ausência de problemas de saúde.</p>
+            <ul class="report-list"><li th:each="item : ${contexto.historico.eventosRecentes}"><span th:text="${view.local(item.data)}"></span> · <span th:text="${item.tipo}"></span><p class="mb-1" th:text="${item.diagnostico}"></p><p th:text="${item.observacao}"></p></li></ul>
+            <h3 class="h6 fw-bold">Medicamentos registrados como ativos</h3>
+            <p th:if="${#lists.isEmpty(contexto.historico.medicamentosAtivos)}" class="small text-muted">Sem registros na consulta. Isso não comprova ausência de tratamento.</p>
+            <ul class="report-list"><li th:each="item : ${contexto.historico.medicamentosAtivos}"><span th:text="${item.nome}"></span> · <span th:text="${item.dosagem}"></span> · <span th:text="${item.frequencia}"></span></li></ul>
+            <h3 class="h6 fw-bold">Vacinas vencidas ou próximas do vencimento</h3>
+            <p th:if="${#lists.isEmpty(contexto.historico.vacinasVencidasOuVencendo)}" class="small text-muted">Sem registros na janela consultada. Confira a carteira de vacinação com a clínica.</p>
+            <ul class="report-list"><li th:each="item : ${contexto.historico.vacinasVencidasOuVencendo}"><span th:text="${item.nome}"></span> · <span th:text="${item.proximaAplicacao}"></span></li></ul>
+            <h3 class="h6 fw-bold">Avisos dos registros</h3>
+            <ul class="report-list"><li th:each="aviso : ${contexto.avisos}" th:text="${aviso}"></li></ul>
+        </details>
+        <details class="card card-custom p-4 mb-4 report-provenance">
+            <summary class="fw-bold">Sobre este relatório</summary>
+            <dl class="row small mt-3 mb-0 report-facts">
+                <dt class="col-sm-4">Origem</dt><dd class="col-sm-8" th:text="${geracao.simulado ? 'Simulação local' : 'Gemini'}"></dd>
+                <dt class="col-sm-4">Modelo / versão das orientações</dt><dd class="col-sm-8"><span th:text="${geracao.modelo}"></span> / <span th:text="${geracao.versaoPrompt}"></span></dd>
+                <dt class="col-sm-4">Registros consultados em</dt><dd class="col-sm-8" th:text="${view.data(geracao.contextoGeradoEm)}"></dd>
+                <dt class="col-sm-4">Salvo em</dt><dd class="col-sm-8" th:text="${view.data(detalhe.salvoEm)}"></dd>
+                <dt class="col-sm-4">Identificação</dt><dd class="col-sm-8 text-break" th:text="${geracao.idGeracao}"></dd>
+            </dl>
+        </details>
+        <p class="small text-muted">Relatório de apoio ao acompanhamento. Não substitui avaliação veterinária.</p>
+    </article>
+</main>
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<script th:replace="~{fragments/layout :: scripts}"></script>
+<script th:src="@{/js/health-report.js}" defer></script>
+</body></html>

@@ -16,7 +16,6 @@ public interface INotificacaoRepository extends JpaRepository<Notificacao, Long>
 
     List<Notificacao> findByTipo(TipoNotificacaoEnum tipo);
 
-    // Native — busca notificações urgentes não lidas
     @Query(nativeQuery = true, value =
             "SELECT * FROM TB_NOTIFICACAO " +
                     "WHERE ID_TUTOR = :idTutor " +

@@ -1,0 +1,80 @@
+const { chromium } = require('playwright');
+const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const path = require('node:path');
+const base = process.argv[2];
+const output = process.argv[3];
+fs.mkdirSync(output, { recursive: true });
+(async () => {
+    const browser = await chromium.launch({ headless: true, channel: process.env.PETTRACK_BROWSER_CHANNEL || undefined });
+    try {
+        const page = await browser.newPage({ viewport: { width: 1365, height: 960 } });
+        page.setDefaultTimeout(10000);
+        const errors = [];
+        page.on('pageerror', e => errors.push(e.message));
+        await page.goto(`${base}/relatorios/pets/1`);
+        await page.waitForURL('**/login');
+        await page.getByLabel('E-mail', { exact: true }).fill('tutor@example.invalid');
+        await page.getByLabel('Senha', { exact: true }).fill('somente-teste');
+        await page.locator('form[action="/login"] button[type="submit"]').click();
+        await page.waitForURL('**/relatorios/pets/1');
+        await page.getByRole('heading', { name: 'Relatórios de Pet de teste' }).waitFor();
+        assert.equal(await page.getByRole('link', { name: 'Ler relatório', exact: false }).count(), 10);
+        await page.screenshot({ path: path.join(output, 'historico-desktop.png'), fullPage: true });
+        await page.getByRole('link', { name: 'Próxima', exact: true }).click();
+        await page.waitForURL('**/relatorios/pets/1?pagina=1');
+        assert.equal(await page.getByRole('link', { name: 'Ler relatório', exact: false }).count(), 2);
+        await page.getByRole('link', { name: 'Anterior', exact: true }).click();
+        const estados = [];
+        await page.exposeFunction('registrarEstadoGeracao', estado => estados.push(estado));
+        await page.evaluate(() => {
+            const form = document.querySelector('[data-gerar-relatorio]');
+            let capturado = false;
+            form.addEventListener('submit', () => {
+                if (capturado) return;
+                capturado = true;
+                const estado = { disabled: form.querySelector('button').disabled, texto: form.querySelector('button').textContent };
+                estado.duplicadoBloqueado = !form.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
+                window.registrarEstadoGeracao(estado);
+            });
+        });
+        await page.getByRole('button', { name: 'Gerar novo relatório', exact: true }).click();
+        assert.equal(estados[0].disabled, true);
+        assert.equal(estados[0].texto, 'Gerando relatório…');
+        assert.equal(estados[0].duplicadoBloqueado, true);
+        await page.waitForURL(/\/relatorios\/pets\/1\/[0-9a-f-]{36}$/);
+        await page.getByText('Relatório gerado e salvo no histórico.', { exact: true }).waitFor();
+        await page.getByText('Relatório de demonstração.', { exact: true }).waitFor();
+        assert.equal(await page.locator('article h2').count(), 4);
+        await page.screenshot({ path: path.join(output, 'relatorio-desktop.png'), fullPage: true });
+        await page.getByText('Dados usados nesta análise', { exact: true }).click();
+        await page.getByText('Indisponível nesta análise', { exact: true }).waitFor();
+        await page.reload();
+        assert.equal(await page.getByText('Relatório gerado e salvo no histórico.', { exact: true }).count(), 0);
+        await page.goto(`${base}/relatorios/pets/1`);
+        assert.match(await page.locator('main').innerText(), /13 registro/);
+        await page.goto(`${base}/relatorios/pets/2`);
+        await page.getByText('O primeiro relatório começa aqui', { exact: true }).waitFor();
+        await page.screenshot({ path: path.join(output, 'historico-vazio.png'), fullPage: true });
+        await page.goto(`${base}/relatorios/pets/3`);
+        await page.getByRole('button', { name: 'Gerar novo relatório', exact: true }).click();
+        await page.getByText(/Não foi possível concluir a geração/).waitFor();
+        await page.screenshot({ path: path.join(output, 'falha-geracao.png'), fullPage: true });
+        const denied = await page.goto(`${base}/relatorios/pets/99`);
+        assert.equal(denied.status(), 403);
+        await page.getByText('Você não tem acesso aos relatórios deste pet.', { exact: true }).waitFor();
+        const mobile = await browser.newPage({ viewport: { width: 390, height: 844 }, storageState: await page.context().storageState() });
+        await mobile.goto(`${base}/relatorios/pets/1/latest`);
+        await mobile.getByRole('heading', { name: 'Pet de teste', exact: true }).waitFor();
+        assert.equal(await mobile.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth), true);
+        await mobile.screenshot({ path: path.join(output, 'relatorio-mobile.png'), fullPage: true });
+        await mobile.goto(`${base}/relatorios/pets/1`);
+        assert.equal(await mobile.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth), true);
+        await mobile.screenshot({ path: path.join(output, 'historico-mobile.png'), fullPage: true });
+        assert.deepEqual(errors, []);
+        fs.writeFileSync(path.join(output, 'resultado.json'), JSON.stringify({ status: 'aprovado', dadosSinteticos: true, oracle: false, apiExterna: false,
+            verificacoes: ['login e sessao', 'historico paginado', 'envio com CSRF', 'estado de geracao', 'redirecionamento para detalhe', 'simulacao identificada',
+                'fontes e limitacoes', 'refresh sem nova geracao', 'historico vazio', 'falha amigavel', 'acesso negado', 'desktop e mobile sem overflow', 'sem erros JavaScript'] }, null, 2));
+        console.log('Fluxo do navegador aprovado. Screenshots e resultado salvos.');
+    } finally { await browser.close(); }
+})().catch(e => { console.error(e); process.exitCode = 1; });

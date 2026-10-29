@@ -11,7 +11,6 @@ public interface IMedicamentoRepository extends JpaRepository<Medicamento, Long>
     List<Medicamento> findByNomeContainingIgnoreCase(String nome);
 
 
-    // Native — busca medicamentos ativos (sem data de fim ou data de fim futura)
     @Query(nativeQuery = true, value =
             "SELECT * FROM TB_MEDICAMENTO " +
                     "WHERE ID_EVENTO IN (" +

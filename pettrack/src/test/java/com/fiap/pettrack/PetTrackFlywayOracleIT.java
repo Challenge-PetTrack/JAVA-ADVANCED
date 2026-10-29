@@ -13,7 +13,6 @@ import java.util.Properties;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-// Teste explicito: instala apenas a migracao pendente e verifica os objetos.
 @EnabledIfEnvironmentVariable(named = "PETTRACK_ORACLE_TESTS", matches = "true")
 class PetTrackFlywayOracleIT {
     @Test void migracaoV4ValidaHistoricoEInstalaPackagesSemErros() throws Exception {

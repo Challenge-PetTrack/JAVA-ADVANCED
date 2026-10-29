@@ -60,6 +60,17 @@ class HealthContextServiceTest {
         assertEquals("NAO_CONFIGURADO", result.clima().status());
     }
 
+    @Test void autorizarHistoricoReutilizaVinculosSemConsultarTelemetriaOuClima() {
+        assertEquals(pet, service.autorizar(1L,usuario));
+        usuario.setRole(PerfilEnum.ROLE_ADMIN);
+        assertEquals(pet,service.autorizar(1L,usuario));
+        usuario.setRole(PerfilEnum.ROLE_VET);usuario.setClinica(pet.getClinica());
+        assertEquals(pet,service.autorizar(1L,usuario));
+        Clinica outra=new Clinica();outra.setId(99L);usuario.setClinica(outra);
+        assertEquals(403,assertThrows(ResponseStatusException.class,()->service.autorizar(1L,usuario)).getStatusCode().value());
+        verifyNoInteractions(repository,clima);
+    }
+
     @ParameterizedTest
     @CsvSource({"6,5,SUBINDO", "5,5,ESTAVEL", "4,5,DESCENDO"})
     void tendenciaUsaDuasAvaliacoesPersistidas(int atual, int anterior, String esperado) {

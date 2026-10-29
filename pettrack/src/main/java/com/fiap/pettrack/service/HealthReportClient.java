@@ -48,7 +48,6 @@ public class HealthReportClient {
                     .exchange((request, response) -> {
                         int status = response.getStatusCode().value();
                         if (status != 200) {
-                            // Nao propagar respostas do provedor, credenciais ou dados clinicos nos erros.
                             HttpStatus destino = switch (status) {
                                 case 429 -> HttpStatus.TOO_MANY_REQUESTS;
                                 case 503 -> HttpStatus.SERVICE_UNAVAILABLE;
@@ -69,6 +68,7 @@ public class HealthReportClient {
                             throw invalida();
                         }
                         if (dto == null || !validator.validate(dto).isEmpty()
+                                || Boolean.TRUE.equals(dto.persistido())
                                 || !dto.idPet().equals(contexto.pet().id())
                                 || !dto.contextoGeradoEm().toInstant().equals(contexto.geradoEm().toInstant())
                                 || dto.simulado() != "mock".equals(dto.provedor())) throw invalida();

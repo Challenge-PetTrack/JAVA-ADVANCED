@@ -10,9 +10,7 @@ public class FlywayConfig {
     @Bean
     public FlywayMigrationStrategy flywayMigrationStrategy() {
         return flyway -> {
-            // Repara automaticamente registros com falha no flyway_schema_history
             flyway.repair();
-            // Executa as migrações pendentes
             flyway.migrate();
         };
     }

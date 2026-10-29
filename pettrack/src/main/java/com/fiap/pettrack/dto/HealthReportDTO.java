@@ -6,15 +6,19 @@ import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.UUID;
 
-/** Resultado transitorio de geracao. Persistencia pertence a prioridade 3. */
 public record HealthReportDTO(
         @NotNull UUID idGeracao, @NotNull @Positive Long idPet,
         @NotNull OffsetDateTime geradoEm, @NotNull OffsetDateTime contextoGeradoEm,
-        @NotBlank @Pattern(regexp = "openai|mock") String provedor,
+        @NotBlank @Pattern(regexp = "gemini|mock") String provedor,
         @NotBlank @Size(max = 200) String modelo,
         @NotBlank @Pattern(regexp = "health-report-v1") String versaoPrompt,
-        @NotNull Boolean simulado, @NotNull @AssertFalse Boolean persistido,
+        @NotNull Boolean simulado, @NotNull Boolean persistido,
         @NotNull @Valid Relatorio relatorio) {
+
+    public HealthReportDTO comoPersistido() {
+        return new HealthReportDTO(idGeracao, idPet, geradoEm, contextoGeradoEm, provedor,
+                modelo, versaoPrompt, simulado, true, relatorio);
+    }
 
     public enum NivelAtencao { BAIXO, MODERADO, ALTO, INDETERMINADO }
 

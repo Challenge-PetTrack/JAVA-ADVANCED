@@ -12,7 +12,6 @@ public interface IProtocoloPreventivoRepository extends JpaRepository<ProtocoloP
 
     List<ProtocoloPreventivo> findByTipo(TipoProtocoloPreventivoEnum tipo);
 
-    // JPQL — busca protocolos pendentes ou atrasados por pet
     @Query("SELECT p FROM ProtocoloPreventivo p WHERE " +
             "p.pet.id = :idPet AND " +
             "p.status IN ('PENDENTE', 'ATRASADO')")

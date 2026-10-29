@@ -118,7 +118,6 @@ public class AdminWebController {
         return "redirect:/admin/pets";
     }
 
-    // Interface do FLUXO 1: Telemetria IoT & Geração de Alertas
     @GetMapping("/telemetria")
     public String simuladorTelemetriaForm(Model model) {
         model.addAttribute("pets", petRepository.findAll());

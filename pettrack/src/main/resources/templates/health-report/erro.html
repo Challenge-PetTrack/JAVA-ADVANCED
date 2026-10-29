@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Consulta de relatórios')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+<main class="container my-5 main-content report-page">
+    <section class="card card-custom p-5 text-center">
+        <p class="text-muted" th:text="'Consulta de relatórios · ' + ${codigo}"></p>
+        <h1 class="h3 fw-bold">Não foi possível abrir esta consulta</h1>
+        <p th:text="${mensagem}" role="alert"></p>
+        <a th:href="@{/dashboard}" class="btn btn-primary align-self-center">Voltar ao painel</a>
+    </section>
+</main>
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<script th:replace="~{fragments/layout :: scripts}"></script>
+</body></html>

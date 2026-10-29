@@ -10,10 +10,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import static org.junit.jupiter.api.Assertions.*;
 
-/** Opt-in explicito: uma geracao paga usando SOMENTE a fixture sintetica, sem acesso ao Oracle. */
-@EnabledIfEnvironmentVariable(named = "PETTRACK_OPENAI_LIVE_TESTS", matches = "true")
-class HealthReportOpenAIIT {
-    @Test void javaPythonOpenAiGeramRelatorioRealComDadosFicticios() throws Exception {
+@EnabledIfEnvironmentVariable(named = "PETTRACK_GEMINI_LIVE_TESTS", matches = "true")
+class HealthReportGeminiIT {
+    @Test void javaPythonGeminiGeramRelatorioRealComDadosFicticios() throws Exception {
         try (var validators = Validation.buildDefaultValidatorFactory()) {
             String token = System.getenv("HEALTH_REPORT_SERVICE_TOKEN");
             assertNotNull(token, "Configurar token de servico no ambiente");
@@ -22,7 +21,7 @@ class HealthReportOpenAIIT {
             var report = client.gerar(HealthReportFixtures.contexto());
             assertFalse(report.simulado());
             assertFalse(report.persistido());
-            assertEquals("openai", report.provedor());
+            assertEquals("gemini", report.provedor());
             assertEquals(1L, report.idPet());
             assertFalse(report.relatorio().resumo().isBlank());
             assertFalse(report.relatorio().motivos().isEmpty());

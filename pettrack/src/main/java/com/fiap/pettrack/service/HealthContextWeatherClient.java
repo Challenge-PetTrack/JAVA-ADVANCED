@@ -56,7 +56,6 @@ public class HealthContextWeatherClient {
                     OffsetDateTime.ofInstant(observado, ZoneOffset.UTC), temp, umidade,
                     body.path("weather").path(0).path("description").asText());
         } catch (RuntimeException ex) {
-            // Nao propagar URI/excecao do provedor: podem conter a chave da API.
             return Clima.indisponivel("FALHA_PROVEDOR", city);
         }
     }

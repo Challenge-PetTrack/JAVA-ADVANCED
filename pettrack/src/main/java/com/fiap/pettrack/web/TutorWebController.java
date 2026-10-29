@@ -80,7 +80,6 @@ public class TutorWebController {
         return "tutor/pet-detalhes";
     }
 
-    // Interface do FLUXO 2: Acompanhamento e Adesão Medicamentosa
     @GetMapping("/medicamentos")
     public String listarMedicamentos(Authentication auth, Model model) {
         Usuario usuario = obterUsuarioLogado(auth);
