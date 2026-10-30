@@ -25,7 +25,7 @@ class PetTrackFlywayOracleIT {
                 p.getProperty("spring.datasource.username"), p.getProperty("spring.datasource.password"))
                 .baselineOnMigrate(true).locations("classpath:db/migration").load();
         flyway.migrate();
-        assertEquals("4", flyway.info().current().getVersion().getVersion());
+        assertEquals("5", flyway.info().current().getVersion().getVersion());
         try (Connection c = flyway.getConfiguration().getDataSource().getConnection();
              Statement s = c.createStatement();
              ResultSet r = s.executeQuery("SELECT COUNT(*) FROM USER_ERRORS WHERE NAME LIKE 'PKG_PETTRACK_%' OR NAME='TRG_AUDITORIA_PET'")) {
