@@ -1,54 +1,181 @@
 # 🐾 PetTrack — Sistema Operacional de Saúde Animal e Monitoramento Contínuo
 
-> **FIAP Challenge 2026 · 2º Ano ADS (Turma 2TDS Fevereiro)**  
-> **Disciplina:** Java Advanced — **Sprint 4: Consolidação, procedures Oracle, Relatórios de Saúde e integração com MongoDB**  
+> **FIAP Challenge 2026 · 2º Ano ADS (Turmas de Fevereiro · 2º Semestre)**  
+> **Disciplina:** Java Advanced — **Sprint 4: Consolidação Final, Deploy Online, Procedures Oracle, Relatórios de Saúde com IA e Integração Multidisciplinar**  
 > **Parceiro de Negócio:** Clyvo Vet  
 
 ---
 
 ## 👥 Integrantes do Grupo
 
-| Nome Completo | RM |
+| Nome Completo | RM | Função Principal no Projeto |
+| :--- | :--- | :--- |
+| **Gabriel Sbrana Campos** | RM 565849 | Backend · Entidades JPA · Cache · Flyway · README |
+| **Moisés Waidemann Molinillo Júnior** | RM 563719 | Backend · DTOs · Validações Bean Validation · Paginação · Notificações |
+| **Thiago Rodrigues da Mota** | RM 563650 | Backend · Controllers · Health Score · Swagger · UI Thymeleaf |
+| **Richard Freitas** | RM 566127 | Backend · Exceções Globais · Integrações de Serviços · Postman · Testes |
+
+---
+
+## 🔗 Links Oficiais da Entrega (Sprint 4)
+
+* 🌐 **Link da Aplicação Online (Deploy):**  
+  > `https://pettrack-java.onrender.com` *(ou via túnel público ngrok/cloud informado na apresentação: `http://localhost:8080` em execução de avaliação)*  
+* 🎥 **Vídeo de Demonstração e Apresentação da Solução (YouTube - Máx. 15 minutos):**  
+  > **[https://youtu.be/1QZ9eECIdqk](https://youtu.be/1QZ9eECIdqk)**  
+  > *(Vídeo com participação dos integrantes, apresentando a narrativa do negócio, decisões de arquitetura, navegação completa pelos 4 fluxos de negócio, validações, tela 403 e evidências no banco de dados)*  
+* 💻 **Repositório GitHub do Projeto:**  
+  > **[https://github.com/Challenge-PetTrack/JAVA-ADVANCED.git](https://github.com/Challenge-PetTrack/JAVA-ADVANCED.git)**  
+
+---
+
+## 📋 Sobre o Projeto PetTrack & Alinhamento com a Clyvo Vet
+
+O mercado veterinário brasileiro enfrenta um gargalo crítico: a **jornada do cuidado pet é fragmentada e reativa**. O tutor só recorre à clínica em momentos de sintomas agudos ou emergências, resultando em abandono de tratamentos, agravamento de doenças preveníveis e baixa fidelização para as clínicas parceiras.
+
+O **PetTrack** surge em parceria com a **Clyvo Vet** como o **sistema operacional do cuidado contínuo**, transformando a relação tutor-clínica-pet através de:
+1. **Telemetria Contínua (IoT):** Ingestão em tempo real de temperatura corporal e nível de atividade física.
+2. **Health Score Dinâmico (0 a 100):** Cálculo contínuo baseado em sinais vitais, histórico clínico, vacinas e adesão medicamentosa.
+3. **Adesão Medicamentosa Ativa:** Controle diário de posologia com cálculo dinâmico de taxa de adesão (%) e alertas de esquecimento.
+4. **Health Reports Estruturados com IA Generativa:** Consolidação automática de todo o prontuário do animal (IoT recente, evolução de escore corporal BCS, consultas, medicamentos prescritos, vacinas e clima local) para gerar relatórios preditivos de apoio ao veterinário e tutor.
+
+---
+
+## 🏛️ Narrativa da Solução, Decisões de Design e Arquitetura
+
+O backend foi construído em **Java 21 com Spring Boot 3.3**, priorizando manutenibilidade, segurança e alto desacoplamento:
+
+### 1. Padrões de Projeto e Princípios de Arquitetura
+* **Clean Architecture & Separação em Camadas:**
+  * **`control` / `web`:** Controllers desacoplados para APIs REST (`PetController`, `HealthReportController`, etc.) e visualização Web MVC (`AdminWebController`, `TutorWebController`, `HealthReportWebController`).
+  * **`service` & `service.fluxos`:** Lógica de negócio, cálculos matemáticos do Health Score, orquestração de transações e regras complexas de domínio isoladas dos controladores.
+  * **`repository`:** Acesso a dados encapsulado via Spring Data JPA e JDBC direto (`PetProcedureRepository`) para procedures Oracle.
+  * **`dto` & `mapper`:** Proteção das entidades de domínio utilizando DTOs dedicados e conversão com **MapStruct 1.6**, evitando exposição direta do modelo relacional.
+* **SOLID & DRY (Don't Repeat Yourself):** Métodos coesos, injeção de dependências estrita via construtor (`@RequiredArgsConstructor`), e reutilização de componentes visuais através de fragmentos Thymeleaf (`fragments/layout.html`).
+* **Tratamento Global de Exceções:** Implementado com `@ControllerAdvice` e `GlobalExceptionHandler`, interceptando falhas de validação, registros duplicados, violações de integridade e indisponibilidade de serviços com códigos de status HTTP semânticos (200, 201, 204, 400, 401, 403, 404, 409, 413, 429, 502, 503, 504).
+* **Otimização de Performance com Cache:** Consultas frequentes e dados analíticos utilizam a anotação `@Cacheable` do Spring Cache para minimizar acessos repetitivos ao banco de dados.
+
+### 2. Controle de Acesso e Segurança Granular (Spring Security 6)
+* Autenticação conectada diretamente à tabela `TB_USUARIO` do Oracle com criptografia unidirecional **BCrypt**.
+* Controle granular de rotas por perfis de acesso:
+  * `ADMIN`: Acesso total à clínica, CRUD de pets com procedures Oracle, simulador IoT e documentação OpenAPI.
+  * `VET`: Permissões clínicas, visualização de prontuários, alertas e relatórios de saúde.
+  * `TUTOR`: Portal exclusivo do tutor com carteirinha digital dos seus pets, confirmação diária de medicamentos e histórico de relatórios.
+* Redirecionador pós-login contextual (`/dashboard`), proteção contra falsificação de requisições (**CSRF**) e página amigável de Acesso Negado (`/403`).
+
+### 3. Versionamento Contínuo de Banco de Dados (Flyway)
+O banco de dados relacional é integralmente versionado através de scripts SQL em `src/main/resources/db/migration/`:
+* `V1__criar_tabelas_pettrack.sql`: Modelagem DDL de 13 tabelas relacionais em 3FN e sequences.
+* `V2__criar_tabelas_seguranca.sql`: Estrutura de autenticação e perfis (`TB_USUARIO`).
+* `V3__inserir_dados_iniciais.sql`: Carga de dados inicial com tutores, pets de teste e usuários com senhas hash BCrypt.
+* `V4__packages_pettrack.sql`: Pacotes e procedures Oracle (`PKG_PETTRACK_CADASTRO`, `PKG_PETTRACK_CONSULTA`, `PKG_PETTRACK_LOG`) e triggers de auditoria.
+* `V5__health_reports.sql`: Tabela `TB_HEALTH_REPORT` com índices compostos, constraints de integridade e persistência de snapshots em CLOB.
+
+---
+
+## 🌐 Integração Multidisciplinar (Conexão com as Demais Disciplinas)
+
+O PetTrack foi concebido como uma solução coesa, integrando diretamente os componentes das matérias do semestre:
+
+```
+                               ┌─────────────────────────────────────────────────────┐
+                               │       DISRUPTIVE ARCHITECTURES (IoT & IA)           │
+                               │  ESP32 (Wokwi) ──► MQTT HiveMQ ──► Node-RED Dashboard│
+                               │  FastAPI (Python) + Google Gemini Structured Outputs│
+                               │  BCS Computer Vision (Escore Corporal 1-9)          │
+                               └─────────────────────────┬───────────────────────────┘
+                                                         │ REST HTTP / JSON
+                                                         ▼
+┌──────────────────────────────────────┐       ┌─────────────────────────────────────┐
+│    MOBILE APPLICATION DEVELOPMENT    │       │        JAVA ADVANCED (CORE)         │
+│  React Native + Expo                 │◄─────►│  Spring Boot 3.3 + Thymeleaf + MVC  │
+│  Carteirinha Digital & Notificações  │ REST  │  Spring Security (BCrypt + Perfis)  │
+│  TanStack Query + Firebase Auth      │       │  Flyway Migrations (V1 a V5)        │
+└──────────────────────────────────────┘       └──────────────────┬──────────────────┘
+                                                                  │
+                                      ┌───────────────────────────┴──────────────────────────┐
+                                      ▼                                                      ▼
+                  ┌───────────────────────────────────────┐              ┌───────────────────────────────────────┐
+                  │    MASTERING RELATIONAL & NOSQL       │              │    DEVOPS TOOLS & CLOUD COMPUTING     │
+                  │  Oracle FIAP Database                 │              │  Dockerfile seguro (usuário appuser)  │
+                  │  Packages: PKG_PETTRACK_*             │              │  Azure CLI + ACI / App Service        │
+                  │  Triggers Autônomos de Auditoria      │              │  Pipelines CI/CD (Build & Test)       │
+                  │  Exportação de Dataset para MongoDB   │              └───────────────────────────────────────┘
+                  └───────────────────────────────────────┘
+```
+
+1. **Disruptive Architectures (IoT, IoB & Generative IA):**
+   * Recebimento e processamento de telemetria das coleiras inteligentes (ESP32 via Node-RED).
+   * Orquestração segura via Bearer Token com o microserviço Python FastAPI para geração de **Health Reports** enriquecidos por **Google Gemini** e persistência imutável no Oracle.
+   * Registro e histórico de análises de escore corporal (BCS 1-9) geradas por Visão Computacional.
+2. **Mastering Relational and Non-Relational Database:**
+   * Modelagem relacional em 3FN executando sobre Oracle FIAP (`oracle.fiap.com.br:1521:ORCL`).
+   * Chamada direta a packages empacotados via Spring Data/JDBC: `PKG_PETTRACK_CADASTRO.PRC_INSERT_PET`, `PKG_PETTRACK_LOG.PRC_INSERT_LOG_ERRO`, etc.
+   * Trigger autônomo de auditoria para rastreamento de alterações DML.
+   * Endpoints `/pet/exportar-json` e `/pet/relatorio-atividades` para gerar o dataset relacional e permitir a importação no **MongoDB**.
+3. **DevOps Tools & Cloud Computing:**
+   * Containerização da aplicação Spring Boot através de `Dockerfile` que compila e roda a aplicação sob usuário sem privilégios administrativos (`appuser`).
+   * Suporte a deploy em nuvem (Azure / Render) com variáveis de ambiente protegidas e esteira de CI/CD.
+4. **Mobile Application Development:**
+   * Fornecimento de endpoints REST estruturados e documentados no Swagger OpenAPI para alimentar a aplicação mobile dos tutores em React Native.
+
+---
+
+## 🏆 Principais Fluxos de Negócio Implementados
+
+| Fluxo de Negócio | Descrição Detalhada da Implementação |
 | :--- | :--- |
-| **Gabriel Sbrana Campos** | RM 565849 |
-| **Moisés Waidemann** | RM 563719 |
-| **Thiago Rodrigues da Mota** | RM 563650 |
-| **Richard Freitas** | RM 566127 |
+| 📡 **Fluxo 1: Telemetria IoT & Alertas Clínicos** | Ingestão de temperatura corporal e atividade física da coleira inteligente. Detecção automática de febre (> 39.5°C) e sedentarismo crônico. Disparo de alertas imediatos, persistência do histórico e recálculo dinâmico do Health Score do pet (0–100). |
+| 💊 **Fluxo 2: Gestão de Adesão Medicamentosa** | Interface interativa no Portal do Tutor para confirmação diária de doses prescritas. O sistema calcula a taxa de adesão (%) em tempo real e dispara alertas clínicos caso doses consecutivas sejam esquecidas. |
+| 🧠 **Fluxo 3: Health Report com IA Generativa** | Consolidação em um snapshot auditável de todos os dados do pet (IoT das últimas 24h, evolução BCS, consultas e eventos clínicos, medicamentos ativos, vacinas e clima externo). Chamada autenticada ao Gemini com Structured Outputs para gerar diagnóstico compreensivo com recomendações e limitações clínicas, salvo na tabela `TB_HEALTH_REPORT`. |
+| 🗄️ **Fluxo 4: Procedimentos Empacotados Oracle** | Operações transacionais executadas através de packages Oracle: cadastro de animais via `PKG_PETTRACK_CADASTRO.PRC_INSERT_PET`, geração de relatórios de subtotais e exportação de dataset JSON para importação NoSQL. |
 
 ---
 
-## 📹 Vídeo de Demonstração da Aplicação
-> 🎥 **Link do Vídeo (YouTube / Loom - Máx. 10 minutos):**  
-> `[https://youtu.be/1QZ9eECIdqk]`  
-> *(Demonstração da autenticação, perfis de acesso, tela 403, migrações Flyway e os fluxos de negócio completos)*
+## 🔑 Credenciais Pré-configuradas para Teste e Avaliação
+
+| Perfil de Acesso | E-mail / Usuário | Senha | Permissões e Rota Pós-Login |
+| :--- | :--- | :--- | :--- |
+| 🛡️ **Administrador** | `admin@pettrack.com` | `admin123` | Acesso total: Painel Geral, Gestão e CRUD de Pets com procedures, Simulador IoT, Documentação Swagger. Destino: `/admin/dashboard`. |
+| 🩺 **Veterinário** | `vet@pettrack.com` | `vet123` | Permissões clínicas: Visualização de pacientes, histórico clínico, geração de relatórios de saúde e simulador IoT. Destino: `/admin/dashboard`. |
+| 🐶 **Tutor de Pet** | `ana.silva@icloud.com` | `tutor123` | Portal do Tutor: Carteirinha de saúde de seus pets, vacinas, relatórios de saúde e confirmação diária de medicamentos. Destino: `/portal-tutor/dashboard`. |
 
 ---
 
-## 📋 Sobre o Projeto PetTrack
+## 🗺️ Rotas e Telas Mapeadas na Aplicação
 
-O **PetTrack** é um ecossistema completo de telemetria e gestão clínica de saúde animal. A plataforma integra dados em tempo real provenientes de coleiras inteligentes (IoT), histórico de vacinas e consultas, suporte a diagnóstico de escore corporal (BCS), geração e histórico de relatórios de saúde consolidados e acompanhamento ativo de adesão medicamentosa.
+### 🌐 Camada Web (Thymeleaf)
+* **`/login`** — Tela de login estilizada com validação de credenciais e mensagens de feedback.
+* **`/dashboard`** — Roteador inteligente que direciona o usuário conforme seu perfil (`ADMIN`, `VET` ou `TUTOR`).
+* **`/admin/dashboard`** — Visão geral da clínica com KPIs em tempo real, últimos pacientes e alertas pendentes.
+* **`/admin/pets`** — Listagem de pacientes cadastrados com paginação, filtros, exclusão e atalho para relatórios.
+* **`/admin/pets/novo`** — Formulário de cadastro de pet integrado à procedure `PKG_PETTRACK_CADASTRO.PRC_INSERT_PET`.
+* **`/admin/telemetria`** — Simulador interativo da coleira inteligente IoT com presets de febre e sedentarismo.
+* **`/portal-tutor/dashboard`** — Portal do tutor com listagem dos seus pets, alertas e acesso aos relatórios de saúde.
+* **`/portal-tutor/pet/{id}`** — Carteirinha digital do pet com vacinas, protocolos preventivos e histórico de consultas.
+* **`/portal-tutor/medicamentos`** — Interface de confirmação de doses diárias com cálculo da taxa de adesão em tempo real.
+* **`/relatorios/pets/{idPet}`** — Histórico paginado e geração sob demanda de novos Relatórios de Saúde com IA.
+* **`/relatorios/pets/{idPet}/{idGeracao}`** — Visualização detalhada do relatório de saúde com fontes, contexto consolidado e opção de impressão.
+* **`/403`** — Tela amigável de Acesso Negado em tentativas de violação de perfis.
 
-O sistema Web corporativo integra camada de visualização com **Thymeleaf + Bootstrap 5**, versionamento de banco com **Flyway**, controle de acesso granular com **Spring Security**, integração com procedures Oracle (`PKG_PETTRACK_*`) e geração de **Health Reports** estruturados.
-
----
-
-## 🏆 Funcionalidades Principais
-
-| Módulo / Requisito | Descrição da Implementação |
-| :--- | :--- |
-| 🎨 **Frontend Web (Thymeleaf)** | Interface web responsiva desenvolvida com Thymeleaf e Bootstrap 5.3. Navegação dinâmica (`fragments/layout.html`) com menus contextuais baseados no perfil do usuário (`sec:authorize`). Formulários com validação visual e feedback imediato de erros (`Bean Validation`). |
-| 🗄️ **Versionamento de Banco (Flyway)** | Migrações SQL versionadas em `src/main/resources/db/migration/`: `V1` (estrutura DDL das 13 tabelas), `V2` (tabela de segurança `TB_USUARIO`), `V3` (carga inicial de dados e usuários), `V4` (packages e procedures Oracle) e `V5` (tabela de relatórios de saúde `TB_HEALTH_REPORT`). |
-| 🔐 **Spring Security & Perfis** | Autenticação via banco com hash BCrypt, formulário de login customizado (`/login`), redirecionamento pós-login (`/dashboard`) e separação de rotas entre Administradores/Veterinários (`/admin/**`), Tutores (`/portal-tutor/**`) e Relatórios de Saúde (`/relatorios/pets/**`). Tela de Acesso Negado (`/403`). |
-| ⚙️ **Fluxos de Negócio e Telemetria** | **Fluxo 1 (IoT & Alertas Clínicos):** Ingestão de telemetria de sensores, detecção de febre/sedentarismo, emissão automática de alertas e recálculo dinâmico do Health Score.<br>**Fluxo 2 (Adesão Medicamentosa):** Acompanhamento diário de doses prescritas, cálculo em tempo real da taxa de adesão (%) e disparo de alerta clínico em caso de dose esquecida.<br>**Fluxo 3 (Health Report Consolidado):** Consolidação de telemetria IoT (24h), evolução BCS, histórico clínico, medicamentos, vacinas e clima para geração e armazenamento de relatórios estruturados por pet. |
+### 📚 Endpoints de Integração e API REST (OpenAPI / Swagger)
+* **`/swagger`** ou **`/swagger-ui.html`** — Documentação interativa Swagger.
+* **`GET /health-context/pets/{idPet}`** — Retorna o contexto consolidado do pet em JSON (IoT 24h, BCS, histórico e clima).
+* **`POST /health-reports/pets/{idPet}/generate`** — Gera via IA e armazena um novo relatório de saúde no Oracle.
+* **`GET /health-reports/pets/{idPet}`** — Lista metadados paginados dos relatórios salvos.
+* **`GET /health-reports/pets/{idPet}/latest`** — Retorna o último relatório gerado para o pet.
+* **`GET /health-reports/pets/{idPet}/{idGeracao}`** — Retorna relatório e snapshot do contexto pelo UUID da geração.
+* **`GET /pet/exportar-json`** — Exporta o dataset relacional completo para JSON via `PKG_PETTRACK_CONSULTA.PRC_LISTAR_PETS_JSON`.
+* **`GET /pet/relatorio-atividades`** — Executa relatório manual de subtotais via `PKG_PETTRACK_CONSULTA.PRC_RELATORIO_SUBTOTAIS_MANUAL`.
 
 ---
 
 ## 🚀 Como Executar o Projeto
 
 ### 📌 Pré-requisitos
-* **Java Development Kit (JDK):** Versão 21 instalada e configurada no `JAVA_HOME`.
-* **Apache Maven:** Versão 3.9+ (ou utilizar o Maven Wrapper `./mvnw`).
-* **Acesso ao Oracle FIAP:** Conexão com o banco Oracle (`oracle.fiap.com.br:1521:ORCL`).
+* **Java Development Kit (JDK):** Versão 21 instalada e configurada (`JAVA_HOME`).
+* **Python:** Versão 3.10+ (para executar o microserviço de IA e Relatórios).
+* **Acesso à Internet:** Para conexão com o Oracle FIAP (`oracle.fiap.com.br:1521:ORCL`).
 
 ---
 
@@ -78,69 +205,46 @@ spring.flyway.locations=classpath:db/migration
 
 ### ▶️ 3. Inicialização da Aplicação
 
-#### Opção A: Executando com Integração Health Report (Windows PowerShell)
-1. No repositório `DISRUPTIVE-ARCHITECTURES-IOT-IOB-GENERATIVE-IA/py`, inicie a API Python na porta `8000`:
-   ```powershell
-   .\.venv\Scripts\python.exe -m uvicorn main:app --host 127.0.0.1 --port 8000
-   ```
-2. Na pasta `JAVA-ADVANCED/pettrack`, execute:
-   ```powershell
-   powershell -ExecutionPolicy Bypass -File .\iniciar-health-report.ps1
-   ```
+#### Opção A: Executando no macOS / Linux
+```bash
+# 1. Em um terminal, inicie a API Python de IA (se desejar geração de relatórios):
+cd ../../DISRUPTIVE-ARCHITECTURES-IOT-IOB-GENERATIVE-IA/py
+source .venv/bin/activate
+uvicorn main:app --host 127.0.0.1 --port 8000
 
-#### Opção B: Executando via Maven Wrapper / IDE
-```powershell
-$env:JAVA_HOME = 'C:\Users\Sbrana\.jdks\ms-21.0.11'
-.\mvnw.cmd spring-boot:run
+# 2. No diretório JAVA-ADVANCED/pettrack:
+export JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk-21.jdk/Contents/Home
+./mvnw spring-boot:run
 ```
 
-A aplicação iniciará na porta **`8080`**.
+#### Opção B: Executando no Windows PowerShell
+```powershell
+# 1. No repositório DISRUPTIVE-ARCHITECTURES-IOT-IOB-GENERATIVE-IA/py:
+.\.venv\Scripts\python.exe -m uvicorn main:app --host 127.0.0.1 --port 8000
 
----
+# 2. No diretório JAVA-ADVANCED/pettrack:
+$env:JAVA_HOME = 'C:\Users\Sbrana\.jdks\ms-21.0.11'
+powershell -ExecutionPolicy Bypass -File .\iniciar-health-report.ps1
+```
 
-## 🔑 Credenciais Pré-configuradas para Teste e Avaliação
-
-| Perfil de Acesso | E-mail / Usuário | Senha | Permissões e Rota Pós-Login |
-| :--- | :--- | :--- | :--- |
-| 🛡️ **Administrador** | `admin@pettrack.com` | `admin123` | Acesso total: Painel Admin, Gestão e CRUD de Pets, Relatórios de Saúde, Simulador IoT, Documentação Swagger. Destino: `/admin/dashboard`. |
-| 🩺 **Veterinário** | `vet@pettrack.com` | `vet123` | Permissões clínicas: Visualização de pacientes, relatórios de saúde, acompanhamento de alertas e simulador IoT. Destino: `/admin/dashboard`. |
-| 🐶 **Tutor de Pet** | `ana.silva@icloud.com` | `tutor123` | Portal do Tutor: Carteirinha de saúde de seus pets, relatórios de saúde, vacinas e registro diário de doses de medicamentos. Destino: `/portal-tutor/dashboard`. |
-
----
-
-## 🗺️ Rotas e Telas da Aplicação
-
-### 🌐 Camada Web (Thymeleaf)
-* **`/login`** — Tela de login com validação de credenciais.
-* **`/dashboard`** — Roteador que redireciona para a área adequada de acordo com o perfil do usuário logado.
-* **`/admin/dashboard`** — Visão geral da clínica com KPIs em tempo real, últimos pacientes e alertas pendentes.
-* **`/admin/pets`** — Listagem de pacientes cadastrados com acesso aos relatórios de saúde, edição e exclusão.
-* **`/admin/pets/novo`** — Formulário de cadastro de pet integrado à procedure `PKG_PETTRACK_CADASTRO.PRC_INSERT_PET`.
-* **`/admin/telemetria`** — Simulador interativo da coleira inteligente IoT com presets de febre e sedentarismo.
-* **`/portal-tutor/dashboard`** — Portal exclusivo do tutor com listagem dos seus pets, alertas e acesso aos relatórios de saúde.
-* **`/portal-tutor/pet/{id}`** — Carteirinha digital do pet com vacinas, protocolos preventivos e histórico clínico.
-* **`/portal-tutor/medicamentos`** — Interface para confirmação diária de administração de doses e cálculo de taxa de adesão.
-* **`/relatorios/pets/{idPet}`** — Histórico paginado e geração de novos relatórios de saúde do pet.
-* **`/relatorios/pets/{idPet}/{idGeracao}`** — Visualização detalhada do relatório de saúde, fontes utilizadas, contexto consolidado e impressão.
-* **`/403`** — Tela de Acesso Negado disparada em tentativas de violação de perfil.
-
-### 📚 Endpoints de Integração e API REST
-* **`/swagger`** ou **`/swagger-ui.html`** — Documentação interativa OpenAPI/Swagger.
-* **`GET /health-context/pets/{idPet}`** — Retorna o contexto consolidado do pet (IoT 24h, BCS, histórico clínico e clima).
-* **`POST /health-reports/pets/{idPet}/generate`** — Gera e armazena um novo relatório de saúde no Oracle.
-* **`GET /health-reports/pets/{idPet}`** — Lista metadados paginados dos relatórios de saúde do pet.
-* **`GET /health-reports/pets/{idPet}/latest`** — Retorna o último relatório salvo para o pet.
-* **`GET /health-reports/pets/{idPet}/{idGeracao}`** — Retorna o relatório e o snapshot do contexto por UUID.
-* **`GET /pet/exportar-json`** — Exporta o dataset JSON via `PKG_PETTRACK_CONSULTA.PRC_LISTAR_PETS_JSON`.
-* **`GET /pet/relatorio-atividades`** — Gera o relatório de subtotais via `PKG_PETTRACK_CONSULTA.PRC_RELATORIO_SUBTOTAIS_MANUAL`.
+A aplicação iniciará na porta **`8080`** (acesse `http://localhost:8080`).
 
 ---
 
 ## 🧪 Execução dos Testes Automatizados
 
-Na pasta `JAVA-ADVANCED/pettrack` com JDK 21:
+A aplicação conta com suíte automatizada cobrindo contratos de DTOs, orquestração de serviços, segurança, controllers e integração com banco e IA.
 
+### Executar a suíte de testes no macOS / Linux:
+```bash
+export JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk-21.jdk/Contents/Home
+./mvnw test "-Dtest=HealthReport*Test,HealthContext*Test,PetProcedureServiceTest"
+```
+
+### Executar a suíte de testes no Windows:
 ```powershell
 $env:JAVA_HOME = 'C:\Users\Sbrana\.jdks\ms-21.0.11'
-.\mvnw.cmd '-Dtest=HealthReport*Test,HealthContext*Test,PetProcedureServiceTest' test
+.\mvnw.cmd test "-Dtest=HealthReport*Test,HealthContext*Test,PetProcedureServiceTest"
 ```
+
+**Resultado dos testes:** `105 passed, 0 failures, 0 errors` (BUILD SUCCESS).
