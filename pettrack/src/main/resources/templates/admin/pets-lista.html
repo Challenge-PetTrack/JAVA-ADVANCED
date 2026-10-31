@@ -42,8 +42,8 @@
                                     <small class="text-muted d-block" th:text="${pet.raca}"></small>
                                 </td>
                                 <td>
-                                    <span th:class="${pet.sexo.name() == 'M' ? 'badge bg-info text-dark' : 'badge bg-danger bg-opacity-75 text-white'}"
-                                          th:text="${pet.sexo.name() == 'M' ? 'Macho' : 'Fêmea'}"></span>
+                                    <span th:class="${pet.sexo != null ? (pet.sexo.name() == 'M' ? 'badge bg-info text-dark' : 'badge bg-danger bg-opacity-75 text-white') : 'badge bg-secondary text-white'}"
+                                          th:text="${pet.sexo != null ? (pet.sexo.name() == 'M' ? 'Macho' : 'Fêmea') : 'Não inf.'}"></span>
                                 </td>
                                 <td>
                                     <span th:text="${pet.idade} + ' anos'"></span>

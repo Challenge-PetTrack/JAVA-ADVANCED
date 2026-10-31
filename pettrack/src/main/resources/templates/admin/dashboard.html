@@ -106,7 +106,7 @@
                                             <span th:if="${alerta.tipoAlerta.name() == 'ADESAO'}" class="badge badge-adesao">Adesão</span>
                                             <span th:if="${alerta.tipoAlerta.name() != 'FEBRE' and alerta.tipoAlerta.name() != 'SEDENTARISMO' and alerta.tipoAlerta.name() != 'ADESAO'}" class="badge bg-secondary" th:text="${alerta.tipoAlerta.name()}"></span>
                                         </td>
-                                        <td class="fw-semibold" th:text="${alerta.pet.nome}"></td>
+                                        <td class="fw-semibold" th:text="${alerta.pet != null ? alerta.pet.nome : 'N/A'}"></td>
                                         <td class="small text-muted" th:text="${alerta.descricao}"></td>
                                         <td class="small fw-bold" th:text="${alerta.valorRef != null ? alerta.valorRef : '-'}"></td>
                                     </tr>
@@ -144,12 +144,12 @@
                                     <tr th:each="p : ${pets}">
                                         <td>
                                             <div class="fw-semibold" th:text="${p.nome}"></div>
-                                            <small class="text-muted" th:text="${p.sexo.name() == 'M' ? 'Macho' : 'Fêmea'}"></small>
+                                            <small class="text-muted" th:text="${p.sexo != null ? (p.sexo.name() == 'M' ? 'Macho' : 'Fêmea') : 'Não informado'}"></small>
                                         </td>
                                         <td>
-                                            <span th:text="${p.especie}"></span> - <small class="text-muted" th:text="${p.raca}"></small>
+                                            <span th:text="${p.especie}"></span> - <small class="text-muted" th:text="${p.raca != null ? p.raca : 'SRD'}"></small>
                                         </td>
-                                        <td th:text="${p.tutor.nome}"></td>
+                                        <td th:text="${p.tutor != null ? p.tutor.nome : 'Sem tutor'}"></td>
                                         <td class="text-end">
                                             <a th:href="@{/admin/pets/editar/{id}(id=${p.id})}" class="btn btn-sm btn-outline-secondary me-1" title="Editar">
                                                 <i class="bi bi-pencil"></i>

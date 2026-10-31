@@ -36,7 +36,7 @@
                     <div class="list-group list-group-flush small">
                         <div class="list-group-item d-flex justify-content-between px-0">
                             <span class="text-muted">Sexo:</span>
-                            <span class="fw-semibold" th:text="${pet.sexo.name() == 'M' ? 'Macho' : 'Fêmea'}"></span>
+                            <span class="fw-semibold" th:text="${pet.sexo != null ? (pet.sexo.name() == 'M' ? 'Macho' : 'Fêmea') : 'Não informado'}"></span>
                         </div>
                         <div class="list-group-item d-flex justify-content-between px-0">
                             <span class="text-muted">Idade:</span>
