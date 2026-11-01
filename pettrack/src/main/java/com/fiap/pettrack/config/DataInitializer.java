@@ -11,31 +11,43 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
+
+import java.util.concurrent.CompletableFuture;
 
 @Component
 public class DataInitializer implements CommandLineRunner {
 
     private static final Logger log = LoggerFactory.getLogger(DataInitializer.class);
 
+    @Lazy
     @Autowired
     private IUsuarioRepository usuarioRepository;
 
+    @Lazy
     @Autowired
     private ITutorRepository tutorRepository;
 
+    @Lazy
     @Autowired
     private IClinicaRepository clinicaRepository;
 
+    @Lazy
     @Autowired
     private PasswordEncoder passwordEncoder;
 
     @Override
     public void run(String... args) {
+        CompletableFuture.runAsync(this::inicializarDadosSeNecessario);
+    }
+
+    private void inicializarDadosSeNecessario() {
         try {
             if (usuarioRepository.count() > 0) {
+                log.info("Dados iniciais ja existentes no banco. Inicializacao concluida.");
                 return;
             }
 
@@ -52,6 +64,7 @@ public class DataInitializer implements CommandLineRunner {
                 Tutor tutor = tutorRepository.findAll(PageRequest.of(0, 1)).stream().findFirst().orElse(null);
                 criarUsuario("ana.silva@icloud.com", "tutor123", "Ana Paula Silva (Tutor)", PerfilEnum.ROLE_TUTOR, tutor, null);
             }
+            log.info("Carga inicial de usuarios concluida com sucesso.");
         } catch (Exception e) {
             log.warn("Aviso ao verificar dados iniciais no startup: {}", e.getMessage());
         }
