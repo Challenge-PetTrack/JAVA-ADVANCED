@@ -13,6 +13,6 @@ public class HealthCheckController {
     @Operation(summary = "Verifica se a aplicação está online e respondendo na porta HTTP")
     @GetMapping("/health")
     public ResponseEntity<String> health() {
-        return ResponseEntity.ok("UP");
+        return ResponseEntity.ok("UP - PETTRACK");
     }
 }
