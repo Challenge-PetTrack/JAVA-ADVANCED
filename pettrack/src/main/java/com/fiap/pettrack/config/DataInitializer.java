@@ -35,6 +35,10 @@ public class DataInitializer implements CommandLineRunner {
     @Override
     public void run(String... args) {
         try {
+            if (usuarioRepository.count() > 0) {
+                return;
+            }
+
             if (!usuarioRepository.existsByEmail("admin@pettrack.com")) {
                 criarUsuario("admin@pettrack.com", "admin123", "Administrador PetTrack", PerfilEnum.ROLE_ADMIN, null, null);
             }
