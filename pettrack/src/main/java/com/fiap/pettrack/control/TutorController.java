@@ -82,7 +82,7 @@ public class TutorController {
         return ResponseEntity.status(HttpStatus.CREATED).body(mapper.toDTO(salvo));
     }
 
-    @Operation(description = "Este endpoint realiza a remoção de um Tutor", summary = "Remover Tutor", tags = "Remoção de Informações")
+    @Operation(description = "Este endpoint remove um tutor", summary = "Remover Tutor", tags = "Remoção de Informações")
     @DeleteMapping(value = "/remover/{id}")
     public ResponseEntity<TutorDTO> removerTutor(@PathVariable Long id) {
 
